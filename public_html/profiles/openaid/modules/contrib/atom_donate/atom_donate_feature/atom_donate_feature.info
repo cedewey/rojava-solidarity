@@ -1,0 +1,23 @@
+name = Atom Donate Feature
+description = Provides a donate button and page.
+core = 7.x
+package = Atom
+
+; Removed to get rid of circular dependency
+; dependencies[] = atom_donate
+
+dependencies[] = context
+dependencies[] = ctools
+features[context][] = atom_donate
+features[ctools][] = context:context:3
+features[features_api][] = api:2
+
+; Exclude atom_donate from the feature as a dependency
+features_exclude[dependencies][atom_donate] = atom_done
+
+; Information added by Drupal.org packaging script on 2015-01-08
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_donate"
+datestamp = "1420754583"
+

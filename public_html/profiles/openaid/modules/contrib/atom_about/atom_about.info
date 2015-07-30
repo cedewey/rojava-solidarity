@@ -1,0 +1,13 @@
+name = Atom About
+description = Adds an About page and link to the main menu.
+core = 7.x
+package = Atom
+
+dependencies[] = menu
+
+; Information added by Drupal.org packaging script on 2015-01-08
+version = "7.x-1.0"
+core = "7.x"
+project = "atom_about"
+datestamp = "1420748614"
+

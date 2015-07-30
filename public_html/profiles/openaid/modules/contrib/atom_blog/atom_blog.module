@@ -1,0 +1,55 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Blog.
+ */
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function atom_blog_field_extra_fields() {
+  $extra = array();
+
+  $extra['node']['blog_post']['display'] = array(
+    'blog_post_date' => array(
+      'label' => t('Date Posted'),
+      'description' => t('Displays the date posted.'),
+      'weight' => -1,
+    ),
+    'blog_post_type' => array(
+      'label' => t('Type of Content'),
+      'description' => t('Displays the type of content.'),
+      'weight' => -2,
+    ),
+  );
+
+  return $extra;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function atom_blog_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'blog_post') {
+    $node->content['blog_post_date'] = array(
+      '#markup' => '<div class="node-date">' . format_date($node->created, 'medium') . '</div>',
+    );
+    $node->content['blog_post_type'] = array(
+      '#markup' => '<div class="node-type">' . node_type_get_name($node->type) . '</div>',
+    );
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function atom_blog_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+  // Remove confusion of the user enabling display settings that do nothing.
+  $type = $form['type']['#default_value'];
+  // Do for the specified content type
+  if ($type == 'blog_post') {
+    $form['display']['node_submitted']['#title'] = t('Display author and date information. (disabled)');
+    $form['display']['node_submitted']['#disabled'] = TRUE;
+    $form['display']['node_submitted']['#description'] = t('Author and publish date settings are controlled in <a href="@link">display settings</a>.', array('@link' => '/admin/structure/types/manage/blog_post/display'));
+  }
+}

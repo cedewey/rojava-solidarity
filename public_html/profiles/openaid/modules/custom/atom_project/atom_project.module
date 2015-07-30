@@ -1,0 +1,685 @@
+<?php
+/**
+ * @file
+ * atom_project functionality
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function atom_project_menu() {
+  $items = array();
+  $items['admin/config/atom/project'] = array(
+    'title' => 'Project settings',
+    'description' => 'Change Atom Project settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('atom_project_admin_project_form'),
+    'access arguments' => array('administer modules'),
+    'file' => 'atom_project.admin.inc',
+  );
+  $items['admin/config/atom/project_map'] = array(
+    'title' => 'Global Project Map settings',
+    'description' => 'Change global Atom Project map settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('atom_project_admin_global_map_form'),
+    'access arguments' => array('administer modules'),
+    'file' => 'atom_project.admin.inc',
+  );
+  $items['admin/config/atom/project_map_block'] = array(
+    'title' => 'Project Map Block settings',
+    'description' => 'Change Atom Project map block settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('atom_project_map_block_admin_project_form'),
+    'access arguments' => array('administer modules'),
+    'file' => 'atom_project.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function atom_project_block_info() {
+  $blocks = array(
+    // this is not cached because it dynamically figures out what needs to be
+    // in the block later.
+    'atom_project_highlights' => array(
+      'info' => t('Atom Project Highlights'),
+      'cache' => DRUPAL_NO_CACHE,
+    ),
+    'atom_project_map_block' => array(
+      'info' => t('Atom Projects Map'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+  );
+
+  if (module_exists('atom_resource_and_project_connector')) {
+    $blocks['atom_project_resources'] = array(
+      'info' => t('Atom Project Resources'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    );
+  }
+
+  $have_news = module_exists('atom_news') && module_exists('atom_news_and_project_connector');
+  $have_blog = module_exists('atom_blog') && module_exists('atom_blog_and_project_connector');
+  if ($have_news || $have_blog) {
+    $blocks['atom_project_latest_updates'] = array(
+      'info' => t('Atom Project Latest Updates'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    );
+  }
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function atom_project_block_view($delta = '') {
+  $block_view_function = $delta . '_view';
+  if (function_exists($block_view_function)) {
+    return call_user_func($block_view_function);
+  }
+  watchdog('atom_project', 'Could not find view callback for %block', array('%block' => $delta), WATCHDOG_NOTICE);
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function atom_project_theme($existing, $type, $theme, $path) {
+  return array(
+    'atom_project_image_gallery' => array(
+      'template' => 'project_image_gallery',
+      'path' => $path . '/templates',
+      'variables' => array(
+        'gallery' => NULL,
+        'project' => NULL,
+        'number_of_galleries' => 0,
+      ),
+    ),
+  );
+}
+
+/**
+ * Block view function for: atom_project_highlights
+ */
+function atom_project_highlights_view() {
+  // figure out current page
+  if (arg(0) === 'node') {
+    $nid = intval(arg(1));
+  }
+
+  $content = array();
+  $node = node_load($nid);
+  if (atom_project_has_map()) {
+    array_push($content, atom_project_map_view($node));
+  }
+
+  if (atom_project_has_gallery($node)) {
+    array_push($content, atom_project_gallery_view($node));
+  }
+
+  $contents = '';
+  if ($content) {
+    $contents = '<div class="atom-project-highlights">';
+    $contents .= implode("\n", $content);
+    $contents .= '</div>';
+  }
+
+  return array(
+    'subject' => '',
+    'content' => $contents,
+  );
+}
+
+/**
+ * Block view function for: atom_project_map_block
+ */
+function atom_project_map_block_view() {
+  $map = atom_project_map();
+  $features = atom_project_map_features();
+
+  if (!$features) {
+    $map['center'] = atom_project_map_block_default_centerpoint();
+    $map['settings']['zoom'] = atom_project_map_block_default_zoom();
+  }
+
+  return array(
+    'subject' => '',
+    'content' => leaflet_render_map($map, $features, atom_project_map_block_height()),
+  );
+}
+
+/**
+ * Check if a project node has an image gallery
+ */
+function atom_project_has_gallery($project) {
+  if (module_exists('atom_image_gallery_feature') && module_exists('atom_project_and_image_gallery_connector')) {
+    return stools_field_has_value($project, 'field_project_image_gallery');
+  }
+  return FALSE;
+}
+
+/**
+ * Determine if the project node has mappable stuff.
+ *
+ * Show a map if leaflet is enabled and any project nodes have geodata.
+ */
+function atom_project_has_map() {
+  if (module_exists('leaflet')) {
+    // check if there is geodata
+    return intval(db_query('SELECT COUNT(*) FROM field_data_field_project_location')->fetchColumn(0));
+  }
+  return FALSE;
+}
+
+/**
+ * Check if the project has resources
+ */
+function atom_project_has_resources($project) {
+  if (module_exists('atom_resource_and_project_connector')) {
+    return intval(db_query('SELECT COUNT(*) FROM field_data_field_resource_related_projects
+      WHERE field_resource_related_projects_target_id = :project', array(':project' => $project->nid))->fetchColumn(0));
+  }
+  return FALSE;
+}
+
+/**
+ * Return a gallery for this project
+ */
+function atom_project_gallery_get($project) {
+  // if there is only one gallery in the project, shortcut and grab that
+  $value = stools_field_value($project, 'field_project_image_gallery');
+  // If multiple galleries exist return the first, otherwise return the one.
+  return is_array($value) ?
+    node_load(array_shift($value)) :
+    node_load($value);
+}
+
+/**
+ * Show image galleries
+ */
+function atom_project_gallery_view($project) {
+  // Get a gallery for this project
+  $gallery = atom_project_gallery_get($project);
+
+  // get the list of images from this gallery
+  $image_uri = NULL;
+  $image_object = NULL;
+  $image_style_thumb = 'atom_image_gallery_teaser';
+  $images = stools_field_value($gallery, 'field_gallery_media_images');
+
+  if (isset($images['uri'])) {
+    $image_uri = $images['uri'];
+    $image_object = $images;
+  }
+  elseif (isset($images[0]['uri'])) {
+    $image_uri = $images[0]['uri'];
+    $image_object = $images[0];
+  }
+  if (isset($image_uri)) {
+
+    $var = array(
+      'item' => $image_object,
+      'image_style' => $image_style_thumb,
+      'path' => array(
+        'path' => 'node/' . $gallery->nid,
+      ),
+    );
+
+    $image = theme_image_formatter($var);
+    $image_path = image_style_url($image_style_thumb, $image_uri);
+  }
+
+  $description = "";
+  if (stools_field_has_value($gallery, 'field_gallery_description')) {
+    $description = stools_field_value($gallery, 'field_gallery_description');
+    $description = text_summary($description, 'filtered_html', 280);
+  }
+
+  return theme('atom_project_image_gallery', array(
+    'project' => $project,
+    'gallery' => $gallery,
+    'image' => $image,
+    'image_path' => $image_path,
+    'description' => $description,
+  ));
+}
+
+/**
+ * Get the project map block height
+ */
+function atom_project_map_block_height() {
+  return variable_get('atom_project_map_block_height', '384px');
+}
+
+/**
+ * Return the default map centerpoint.
+ *
+ * @return array
+ *   An array with lat/lon components
+ */
+function atom_project_map_block_default_centerpoint() {
+  return variable_get(
+    'atom_project_map_block_default_centerpoint',
+    array('lat' => 39.739167, 'lon' => -104.984722)
+  );
+}
+
+/**
+ * Return the default zoom for the map
+ *
+ * @return int
+ *   Return the default zoom level for the project map
+ */
+function atom_project_map_block_default_zoom() {
+  return intval(variable_get('atom_project_map_block_default_zoom', 5));
+}
+
+
+/**
+ * Check if we should center on the current project.
+ *
+ * If the variable `atom_project_map_center_on_project` is TRUE, the map will
+ * be centered on the current project (if possible). Otherwise, the default
+ * centerpoint is used.
+ *
+ * @return bool
+ *   Returns TRUE if the map should center on the project.
+ */
+function atom_project_map_center_on_project() {
+  return variable_get('atom_project_map_center_on_project', TRUE);
+}
+
+/**
+ * Return the default map centerpoint.
+ *
+ * @return array
+ *   An array with lat/lon components
+ */
+function atom_project_map_default_centerpoint() {
+  return variable_get(
+    'atom_project_map_default_centerpoint',
+    array('lat' => 39.739167, 'lon' => -104.984722)
+  );
+}
+
+/**
+ * Return the default zoom for the map
+ *
+ * @return int
+ *   Return the default zoom level for the project map
+ */
+function atom_project_map_default_zoom() {
+  return intval(variable_get('atom_project_map_default_zoom', 5));
+}
+
+/**
+ * Earth tileset for the project map
+ */
+function atom_project_map_earth_tileset() {
+  return variable_get('atom_project_earth_tileset', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+}
+
+/**
+ * Attribute for the earth tileset
+ */
+function atom_project_map_earth_tileset_attribution() {
+  return variable_get('atom_project_earth_tileset_attribution', 'OSM Mapnik');
+}
+
+/**
+ * Return feature icon settings
+ */
+function atom_project_map_feature_icon() {
+  $icon = array();
+
+  $marker = atom_project_map_marker();
+
+  if ($marker['marker_standard']) {
+    $standard = file_load($marker['marker_standard_file']);
+    $standard_info = image_get_info($standard->uri);
+    $icon['iconUrl'] = $marker['marker_standard'];
+    if ($standard_info) {
+      $icon['iconSize'] = array($standard_info['width'], $standard_info['height']);
+    }
+  }
+  if ($marker['marker_retina']) {
+    $retina = file_load($marker['marker_retina_file']);
+    $retina_info = image_get_info($retina->uri);
+    $icon['iconRetinaUrl'] = $marker['marker_retina'];
+    if ($retina_info) {
+      $icon['iconRetinaSize'] = array($retina_info['width'], $retina_info['height']);
+    }
+  }
+  if ($marker['marker_retina']) {
+    $icon['iconRetinaUrl'] = $marker['marker_retina'];
+  }
+
+  if ($marker['icon_anchor']) {
+    $icon['iconAnchor'] = $marker['icon_anchor'];
+  }
+  if ($marker['popup_anchor']) {
+    $icon['popupAnchor'] = $marker['popup_anchor'];
+  }
+  if ($marker['shadow_anchor']) {
+    $icon['shadowAnchor'] = $marker['shadow_anchor'];
+  }
+
+  return $icon;
+}
+
+/**
+ * Return the features for the projects map.
+ *
+ * Finds all the project location data and builds the feature geodata from that
+ * field data, adding it to an array of features that can be passed to
+ * leaflet_render_map().
+ *
+ * Feature popups can be populated by implementing
+ * hook_atom_project_project_popup(). The features can be altered by
+ * implementing hook_atom_project_feature_alter().
+ *
+ * @param object $current_project
+ *   The current project being viewed
+ *
+ * @return array
+ *   Array of features for a leaflet map
+ *
+ * @see hook_atom_project_project_popup()
+ * @see hook_atom_project_feature_alter()
+ */
+function atom_project_map_features($current_project = NULL) {
+  $features = &drupal_static(__FUNCTION__ . '_' . intval($current_project), array());
+
+  if (!$features) {
+    $query = db_select('field_data_field_project_location', 'p');
+    $query->fields('p');
+    $query->join('node', 'n', 'p.entity_id = n.nid AND p.revision_id = n.vid');
+    $query->fields('n', array('title'));
+    $query->condition('n.status', 1, '=');
+
+    $features = array();
+    $locations = $query->execute();
+    while ($location = $locations->fetchAssoc()) {
+      $data = array();
+      foreach ($location as $key => $value) {
+        if (stools_string_startswith($key, 'field_project_location_')) {
+          $key = str_replace('field_project_location_', '', $key);
+          $data[$key] = $value;
+        }
+      }
+      $feature = leaflet_process_geofield(array($data));
+      if ($feature) {
+        $feature = $feature[0];
+
+        // get the popup text by invoking hook_atom_project_project_popup
+        $popup = module_invoke_all('atom_project_project_popup', $location);
+        $feature['popup'] = array_shift($popup);
+
+        // flag this feature if it is the current project
+        if ($current_project) {
+          $feature['current_project'] = $location['entity_id'] === $current_project->nid;
+        }
+
+        $icon = atom_project_map_feature_icon();
+        if ($icon) {
+          $feature['icon'] = $icon;
+        }
+
+        // allow other modules to alter the feature.
+        drupal_alter('atom_project_feature', $location, $current_project);
+        array_push($features, $feature);
+      }
+    }
+  }
+
+  return $features;
+}
+
+/**
+ * Return the map height.
+ *
+ * @return string
+ *   The height of the map.
+ */
+function atom_project_map_height() {
+  return variable_get('atom_project_map_height', '408px');
+}
+
+/**
+ * Return the map marker for projects.
+ */
+function atom_project_map_marker() {
+  return array(
+    'marker_standard' => variable_get('atom_project_marker_url', ''),
+    'marker_retina' => variable_get('atom_project_marker_retina_url', ''),
+    'shadow_standard' => variable_get('atom_project_shadow_url', ''),
+    'shadow_retina' => variable_get('atom_project_shadow_retina_url', ''),
+    'marker_standard_file' => variable_get('atom_project_marker_file', ''),
+    'marker_retina_file' => variable_get('atom_project_marker_retina_file', ''),
+    'shadow_standard_file' => variable_get('atom_project_shadow_file', ''),
+    'shadow_retina_file' => variable_get('atom_project_shadow_retina_file', ''),
+    'icon_anchor' => variable_get('atom_project_marker_icon_anchor', ''),
+    'popup_anchor' => variable_get('atom_project_marker_popup_anchor', ''),
+    'shadow_anchor' => variable_get('atom_project_marker_shadow_anchor', ''),
+  );
+}
+
+/**
+ * Get the atom project map.
+ *
+ * This helper function will add the necessary map settings, tileset, etc.
+ *
+ * @return array
+ *   Leaflet map array
+ */
+function atom_project_map() {
+  $info = leaflet_map_get_info();
+  $map = array_shift($info);
+  $map['settings']['layerControl'] = FALSE;
+  $map['settings']['scrollWheelZoom'] = FALSE;
+
+  // set the tileset settings
+  $map['layers']['earth']['urlTemplate'] = atom_project_map_earth_tileset();
+  $map['layers']['earth']['options']['attribution'] = atom_project_map_earth_tileset_attribution();
+
+  // hide the attribution control if no attribution is set
+  if (!atom_project_map_earth_tileset_attribution()) {
+    $map['settings']['attributionControl'] = FALSE;
+  }
+  return $map;
+}
+
+/**
+ * Add a map of all projects that have location data.
+ */
+function atom_project_map_view($project) {
+  if (!module_exists('leaflet')) {
+    watchdog('atom_project', 'Cannot generate map: leaflet module not enabled', array(), WATCHDOG_ERROR);
+    return;
+  }
+
+  $map = atom_project_map();
+
+  // center on this project if desired
+  if (atom_project_map_center_on_project()) {
+    $data = field_get_items('node', $project, 'field_project_location');
+    $center = array();
+    $features = atom_project_map_features($project);
+    if ($data) {
+      foreach ($data as $geo_data) {
+        if ($geo_data['geo_type'] === 'point' && empty($center)) {
+          $center = array(
+            'lat' => $geo_data['lat'],
+            'lon' => $geo_data['lon'],
+          );
+        }
+      }
+    }
+    $map['center'] = $center;
+    $map['settings']['zoom'] = atom_project_map_default_zoom();
+  }
+
+  return '<div class="atom-project-highlights--map">' . leaflet_render_map($map, $features, atom_project_map_height()) . '</div>';
+}
+
+/**
+ * Implements hook_atom_project_project_popup().
+ */
+function atom_project_atom_project_project_popup($location_data) {
+  return l($location_data['title'], 'node/' . $location_data['entity_id']);
+}
+
+/**
+ * View function for block: atom_project_resources
+ *
+ * @return array
+ *   The block
+ */
+function atom_project_resources_view() {
+  $block = array();
+
+  // we can only do stuff if the connector is setup
+  if (module_exists('atom_resource_and_project_connector')) {
+    if (arg(0) === 'node') {
+      $nid = intval(arg(1));
+    }
+
+    $node = node_load($nid);
+    if (atom_project_has_resources($node)) {
+      $resources = atom_resources_get_project_resources($node, 3);
+      $resource_links = array_map('atom_project_resource_links', $resources);
+      $block['content'] = theme('item_list', array(
+        'items' => $resource_links,
+        'title' => t('Resources'),
+        'attributes' => array(
+          'class' => array('list--resources'),
+        ),
+      ));
+
+      $block['content'] .= l(
+        t('View All Resources'),
+        'resources',
+        array(
+          'query' => array('project' => $nid),
+          'attributes' => array(
+            'class' => array('link--all'),
+          ),
+        )
+      );
+    }
+  }
+
+  return $block;
+}
+
+/**
+ * Change a resource node into a link to the resource
+ */
+function atom_project_resource_links($resource) {
+  $title = $resource->title;
+  if (stools_field_has_value($resource, 'field_resource_file')) {
+    $file = stools_field_value($resource, 'field_resource_file');
+    $file_info = pathinfo($file['filename']);
+    if ($file_info) {
+      $title .= ' (' . drupal_strtoupper($file_info['extension']) . ')';
+    }
+  }
+  return l($title, 'node/' . $resource->nid, array(
+    'attributes' => array(
+      'class' => array(),
+    ),
+  ));
+}
+
+/**
+ * Return the block for latest updates for a project
+ */
+function atom_project_latest_updates_view() {
+  $block = array();
+
+  $project = NULL;
+  if (arg(0) === 'node') {
+    $nid = intval(arg(1));
+    $project = node_load($nid);
+  }
+
+  if (!$project) {
+    return $block;
+  }
+
+  $have_news = module_exists('atom_news') && module_exists('atom_news_and_project_connector');
+  $have_blog = module_exists('atom_blog') && module_exists('atom_blog_and_project_connector');
+
+  if ($have_news || $have_blog) {
+    $block['subject'] = t('Latest Updates');
+    $block['content'] = '';
+
+    $post_types = array();
+    if ($have_news) {
+      array_push($post_types, 'news');
+    }
+    if ($have_blog) {
+      array_push($post_types, 'blog_post');
+    }
+    drupal_alter('atom_project_update_types', $post_types);
+
+    $posts = db_select('node', 'n');
+    $posts->fields('n');
+    $posts->condition('type', $post_types, 'IN')
+      ->condition('status', 1);
+
+    // $posts->range(0, 4);
+    $posts->orderBy('created', 'desc');
+
+    $post_nodes = array();
+    $results = $posts->execute();
+    while ($result = $results->fetchAssoc()) {
+      array_push($post_nodes, $result['nid']);
+    }
+    node_load_multiple($post_nodes);
+    $rendered_nodes = array();
+    $related_count = 0;
+    foreach ($post_nodes as $nid) {
+      $node = node_load($nid);
+      if ($node) {
+        // check if this update relates to this project
+        $related = FALSE;
+        if (stools_field_has_value($node, 'field_blog_related_projects') && stools_field_contains_value($node, 'field_blog_related_projects', $project->nid)) {
+          $related = TRUE;
+        }
+
+        if (stools_field_has_value($node, 'field_news_related_projects') && stools_field_contains_value($node, 'field_news_related_projects', $project->nid)) {
+          $related = TRUE;
+        }
+
+        if ($related) {
+          $related_count++;
+          $node_view = node_view($node, 'teaser');
+          $rendered_nodes[] = drupal_render($node_view);
+
+          if ($related_count >= 4) {
+            break;
+          }
+        }
+      }
+    }
+
+    $block['content'] = '<p>' . t('There are no project updates available currently.') . '</p>';
+    if ($rendered_nodes) {
+      $block['content'] = theme_item_list(array(
+          'items' => $rendered_nodes,
+          'type' => 'ul',
+          'attributes' => array(
+            'class' => array('list--ruled'),
+          ),
+        )
+      );
+    }
+  }
+
+  return $block;
+}

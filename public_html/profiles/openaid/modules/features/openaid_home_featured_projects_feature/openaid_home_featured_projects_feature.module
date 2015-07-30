@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OpenAid Home Featured Projects Feature feature.
+ */
+
+include_once 'openaid_home_featured_projects_feature.features.inc';

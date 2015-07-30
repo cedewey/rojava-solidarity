@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Staff Feature feature.
+ */
+
+include_once 'atom_staff_feature.features.inc';

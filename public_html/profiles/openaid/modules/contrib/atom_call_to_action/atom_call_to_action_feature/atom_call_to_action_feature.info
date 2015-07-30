@@ -1,0 +1,55 @@
+name = Atom Call to Action
+description = Adds configurable "call to action" blocks of content which can be added to any page.
+core = 7.x
+package = Atom
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = image
+dependencies[] = link
+dependencies[] = pathauto
+dependencies[] = strongarm
+dependencies[] = text
+features[context][] = atom_call_to_action
+features[ctools][] = context:context:3
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[field_base][] = field_call_to_action_image
+features[field_base][] = field_call_to_action_link
+features[field_base][] = field_call_to_action_pages
+features[field_base][] = field_call_to_action_text
+features[field_instance][] = node-call_to_action-field_call_to_action_image
+features[field_instance][] = node-call_to_action-field_call_to_action_link
+features[field_instance][] = node-call_to_action-field_call_to_action_pages
+features[field_instance][] = node-call_to_action-field_call_to_action_text
+features[image][] = atom_call_to_action_teaser
+features[node][] = call_to_action
+features[variable][] = comment_anonymous_call_to_action
+features[variable][] = comment_call_to_action
+features[variable][] = comment_default_mode_call_to_action
+features[variable][] = comment_default_per_page_call_to_action
+features[variable][] = comment_form_location_call_to_action
+features[variable][] = comment_preview_call_to_action
+features[variable][] = comment_subject_field_call_to_action
+features[variable][] = field_bundle_settings_node__call_to_action
+features[variable][] = menu_options_call_to_action
+features[variable][] = menu_parent_call_to_action
+features[variable][] = node_options_call_to_action
+features[variable][] = node_preview_call_to_action
+features[variable][] = node_submitted_call_to_action
+features[variable][] = pathauto_node_call_to_action_pattern
+features_exclude[dependencies][atom_call_to_action] = atom_call_to_action
+
+; Information added by Drupal.org packaging script on 2015-03-02
+version = "7.x-2.0"
+core = "7.x"
+project = "openaid"
+datestamp = "1425331305"
+
+
+; Information added by Drupal.org packaging script on 2015-03-27
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_call_to_action"
+datestamp = "1427492284"
+

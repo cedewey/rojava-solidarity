@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OpenAid Dashboard Feature feature.
+ */
+
+include_once 'openaid_dashboard_feature.features.inc';

@@ -1,0 +1,34 @@
+name = Atom Contact Feature
+description = Adds a Contact page and Contact link in the footer.
+core = 7.x
+package = Atom
+dependencies[] = atom_contact
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = strongarm
+dependencies[] = webform
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[node][] = webform
+features[variable][] = comment_anonymous_webform
+features[variable][] = comment_default_mode_webform
+features[variable][] = comment_default_per_page_webform
+features[variable][] = comment_form_location_webform
+features[variable][] = comment_preview_webform
+features[variable][] = comment_subject_field_webform
+features[variable][] = comment_webform
+features[variable][] = menu_options_webform
+features[variable][] = menu_parent_webform
+features[variable][] = node_options_webform
+features[variable][] = node_preview_webform
+features[variable][] = node_submitted_webform
+features[variable][] = pathauto_node_webform_pattern
+features_exclude[field_base][body] = body
+features_exclude[field_instance][node-webform-body] = node-webform-body
+
+; Information added by Drupal.org packaging script on 2015-01-08
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_contact"
+datestamp = "1420749486"
+

@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function atom_terms_of_use_enable() {
+  atom_terms_of_use_create_page();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function atom_terms_of_use_disable() {
+  atom_terms_of_use_disable_menu_link();
+}

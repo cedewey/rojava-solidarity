@@ -1,0 +1,14 @@
+name = Atom Contact
+description = Adds a Contact page and Contact link in the footer.
+core = 7.x
+package = Atom
+
+dependencies[] = menu
+dependencies[] = webform
+
+; Information added by Drupal.org packaging script on 2015-01-08
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_contact"
+datestamp = "1420749486"
+

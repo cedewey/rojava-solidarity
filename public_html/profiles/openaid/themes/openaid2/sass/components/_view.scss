@@ -1,0 +1,85 @@
+//
+// @file
+// Views specific styles.
+//
+// ----------------------------------------------------------------------------
+
+.view-empty {
+  p {
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.views-exposed-form {
+  background-color: $gray-white;
+  padding: rhythm(4) 30px 0 30px;
+  margin-bottom: rhythm(8);
+}
+
+.views-exposed-widget {
+  // margin-bottom: rhythm(4);
+
+  > label {
+    width: 14em;
+  }
+
+  // .container-inline-date > .form-item {
+  //   margin-bottom: 0;
+  // }
+
+  @include breakpoint($mobile-wide) {
+    width: 35%;
+    display: inline-block;
+    margin-right: 12%;
+    vertical-align: top;
+  }
+
+  @include breakpoint($tablet-wide) {
+    width: 20%;
+    margin-right: 4%;
+  }
+}
+
+.views-submit-button,
+.views-reset-button {
+  width: auto;
+  display: inline-block;
+  margin-right: .5em;
+  margin-bottom: rhythm(4);
+  margin-top: rhythm(4);
+
+  .form-submit {
+    @include button--small;
+  }
+  @include breakpoint($mobile-wide) {
+    margin-top: 0;
+  }
+}
+
+.views-reset-button {
+  .form-submit {
+    background-color: $gray;
+  }
+}
+
+//
+// Photo exposed filter.
+//
+
+.view-id-atom_image_gallery.view-display-id-page {
+  .view-filters { display: none; }
+}
+
+.views-widget-filter-field_resource_related_projects_target_id {
+  display: none;
+}
+
+//
+// Partners
+//
+
+.view-id-atom-partners {
+  
+}

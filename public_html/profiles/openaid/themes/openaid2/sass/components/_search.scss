@@ -1,0 +1,168 @@
+//
+// @file
+// Search styles.
+// ----------------------------------------------------------------------------
+
+// Search block
+#block-search-form,
+.search-form #edit-basic {
+  position: relative;
+
+  .form-item-label {
+    display: none;
+    visibility: hidden;
+  }
+
+  .form-item {
+    display: block;
+    border-bottom: 1px solid $clr-border;
+    padding-right: 2em;
+    margin: 0;
+  }
+
+  .form-text {
+    border: 0;
+    border-radius: 0;
+    @include adjust-font-size-to($fs-xs);
+    padding: rhythm(1, $fs-xs) 0;
+    margin-right: 2em;
+    margin-bottom: rhythm(1);
+  }
+
+  .form-actions {
+    @extend .fa-search;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 1.25em;
+    height: 1em;
+    opacity: .7;
+
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+
+    &:before {
+      @extend .fa;
+    }
+  }
+
+  .form-submit {
+    border: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 0;
+    background-color: transparent;
+    color: transparent;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.search-form #edit-basic  {
+  @include fa-icon;
+  @extend .fa-search;
+
+  &:before {
+    @extend .fa;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 1.25em;
+    height: 1em;
+  }
+
+  .form-submit {
+    width: 2em;
+  }
+}
+
+#block-search-form {
+  .form-text {
+    width: 100%;
+    padding-left: 4px;
+  }
+}
+
+.search-advanced {
+  margin-top: rhythm(4);
+}
+
+.page-search {
+  .search-form {
+    margin-bottom: rhythm(8);
+    #edit-basic {
+      width: 100%;
+      .form-text {
+        @include adjust-font-size-to($fs-l);
+        width: 98%;
+        margin-bottom: 0;
+        margin-right: 0;
+      }
+    }
+  }
+
+  @include breakpoint($mobile-wide) {
+    .page-title {
+      float: left;
+      margin-bottom: 0;
+    }
+
+    .search-form {
+      @include clearfix;
+
+      #edit-basic {
+        display: block;
+        // float: right;
+        margin-top: rhythm(2, $fs-l);
+        margin-left: 200px;
+        width: auto;
+        .form-text {
+          width: 98%;
+          margin-right: 0;
+        }
+      }
+
+      #edit-advanced {
+        clear: both;
+      }
+    }
+  }
+}
+
+
+.search-results {
+  list-style-type: decimal;
+  margin-bottom: rhythm(8);
+  padding-left: rhythm(5);
+
+  .search-snippet-info {
+    padding: 0;
+  }
+}
+
+.search-result {
+  margin-top: rhythm(8);
+}
+
+.search-snippet {
+  color: $gray-dark;
+
+  > strong {
+    color: $gray-darkest;
+  }
+}
+
+.search-advanced {
+  &.collapsed {
+    border: none;
+  }
+}
+

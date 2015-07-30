@@ -1,0 +1,248 @@
+//
+// @file
+// Default tag styles.
+//
+// The only class selectors allowed in this file are those intended
+// for use within the WYSIWYG editor.
+// ----------------------------------------------------------------------------
+
+
+// Establish Vertical rhythm.
+* html {
+  font-size: 100% * $base-font-size / $browser-default-font-size;
+}
+
+html {
+  font-size: $base-font-size;
+  // Override the default line height to allow for smaller baseline increments.
+  @include adjust-leading-to(4);
+}
+
+body {
+  color: $clr-text;
+  font-family: $ff-sans;
+}
+
+// Use border-box by default on elements typically used for layout.
+* { @include border-box; }
+
+//
+// Headings
+//
+
+h1 {
+  @include adjust-font-size-to($fs-h1);
+  @include rhythm(2, 0, 0, 2, $fs-h1);
+}
+
+h2 {
+  @include adjust-font-size-to($fs-h2);
+  @include rhythm(2, 0, 0, 2, $fs-h2);
+}
+
+h3 {
+  @include adjust-font-size-to($fs-h3);
+  @include rhythm(2, 0, 0, 2, $fs-h3);
+}
+
+h4 {
+  @include adjust-font-size-to($fs-h4);
+  @include rhythm(4, 0, 0, 0, $fs-h4);
+}
+
+h5 {
+  @include adjust-font-size-to($fs-h5);
+  @include rhythm(4, 0, 0, 0, $fs-h5);
+}
+
+h6 {
+  @include adjust-font-size-to($fs-h6);
+  @include rhythm(4, 0, 0, 0, $fs-h6);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+//
+// Links
+//
+
+a {
+  @include transition();
+}
+
+//
+// Copy
+//
+
+p {
+  margin: 0 0 rhythm(4);
+}
+
+blockquote {
+  margin: rhythm(2) 0 rhythm(2) $indent-amount;
+  font-style: italic;
+}
+
+//
+// Images
+//
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+//
+// Lists
+//
+
+ul,
+ol {
+  margin-bottom: rhythm(4);
+
+  li {
+    margin-bottom: rhythm(2);
+  }
+}
+
+//
+// Definition Lists
+//
+
+dl {
+  margin-bottom: rhythm(3);
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  margin-left: $w-gutter;
+}
+
+// Form Labels
+// ---------------------
+
+label {
+  @include adjust-font-size-to($fs-s);
+  display: block;
+  margin-bottom: rhythm(1, $fs-s);
+  font-family: $ff-sans;
+  font-weight: bold;
+
+  // Labels on checkboxes and radios
+  &.option {
+    display: inline;
+    font-weight: normal;
+  }
+}
+
+//
+// Forms
+//
+
+textarea,
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"] {
+  @include border-radius(3px);
+  @include box-sizing(content-box);
+  // @include rhythm-borders(1px, .5);
+  padding: rhythm(.5);
+  margin-bottom: 0;
+  max-width: 100%;
+  background-color: $white;
+  border: 1px solid $gray-lighter;
+  color: $gray-darker;
+
+  &:focus {
+    border-color: $gray;
+  }
+}
+
+.resizable textarea {
+  @include border-bottom-radius(0);
+}
+
+input[type="file"] {
+  font-family: $ff-sans;
+}
+
+input[type="submit"],
+button {
+  @include button;
+  @include button--medium;
+}
+
+select {
+  @include adjust-font-size-to($fs-m);
+  margin-bottom: 0;
+}
+
+
+// Tables
+// ----------------------------------------------------------------------------
+
+table {
+  max-width: 100%;
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: rhythm(2);
+}
+
+thead {
+  text-align: left;
+
+  th {
+    vertical-align: bottom;
+  }
+}
+
+th,
+td {
+  padding: 8px;
+  vertical-align: top;
+  border-top: 1px solid $clr-table-border;
+}
+
+// Remove top border from thead by default
+caption + thead tr:first-child th,
+caption + thead tr:first-child td,
+colgroup + thead tr:first-child th,
+colgroup + thead tr:first-child td,
+thead:first-child tr:first-child th,
+thead:first-child tr:first-child td {
+  border-top: 0;
+}
+
+// Account for multiple tbody instances
+tbody + tbody {
+  border-top: 2px solid $clr-table-border;
+}
+
+tr.odd  { background-color: $clr-table-odd; }
+tr.even { background-color: $clr-table-even; }
+
+//
+// Utility classes
+//
+
+.clearfix {
+  @include legacy-pie-clearfix;
+}
+
+.intro {
+  @include adjust-font-size-to($fs-xxl);
+}

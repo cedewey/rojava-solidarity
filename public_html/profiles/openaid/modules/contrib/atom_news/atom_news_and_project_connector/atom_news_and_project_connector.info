@@ -1,0 +1,18 @@
+name = Atom News and Project Connector
+description = Adds the ability for news posts to reference projects.
+core = 7.x
+package = Atom
+dependencies[] = atom_news_feature
+dependencies[] = atom_project_feature
+dependencies[] = entityreference
+dependencies[] = features
+features[features_api][] = api:2
+features[field_base][] = field_news_related_projects
+features[field_instance][] = node-news-field_news_related_projects
+
+; Information added by Drupal.org packaging script on 2015-04-09
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_news"
+datestamp = "1428612269"
+

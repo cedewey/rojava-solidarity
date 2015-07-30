@@ -1,0 +1,14 @@
+#featured {
+  background: $gray-lightest;
+  @include clearfix;
+  margin-bottom: rhythm(10);
+  padding: rhythm(8) 0;
+
+  @include breakpoint($tablet-wide) {
+    padding: rhythm(11) 0;
+  }
+
+  .block-title {
+    text-transform: none;
+  }
+}

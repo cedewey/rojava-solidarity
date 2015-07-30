@@ -1,0 +1,17 @@
+
+// Transition.
+//----------------------------------------------------------------------------
+$default-transition-duration: .1s;
+$default-transition-function: ease-out;
+
+// Text shadow.
+//----------------------------------------------------------------------------
+$default-text-shadow-color: rgba($gray-dark, .6);
+$default-text-shadow-blur: 1px;
+$default-text-shadow-v-offset: 1px;
+
+// Border radius.
+//----------------------------------------------------------------------------
+$radius-s: .25em;
+$radius-m: .5em;
+$radius-l: 50%;

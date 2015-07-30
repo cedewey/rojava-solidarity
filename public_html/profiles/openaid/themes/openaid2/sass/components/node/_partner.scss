@@ -1,0 +1,68 @@
+#block-views-openaid-partners-partners-block {
+  border: 10px solid $gray-lightest;
+  padding: rhythm(5) 40px;
+  text-align: center;
+
+  .view-content {
+    margin-bottom: rhythm(4);
+  }
+
+  .block-title {
+    @include adjust-font-size-to($fs-l);
+    padding-bottom: rhythm(1, $fs-l);
+    border-bottom: 1px solid $clr-border;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .item-list > ul {
+    padding: 0;
+
+    > li {
+      list-style-type: none;
+      margin-bottom: rhythm(4);
+      padding-bottom: rhythm(4);
+      border-bottom: 1px solid $clr-border;
+    }
+
+    @include breakpoint($mobile-wide ($tablet-wide - 1px)) {
+      > li {
+        border: 0;
+        display: inline-block;
+        vertical-align: middle;
+        width: 48%;
+      }
+    }
+  }
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 75px;
+    width: auto !important;
+  }
+}
+
+
+.view-display-id-partners_page {
+  .list--3up {
+    li {
+      line-height: 210px;
+      text-align: center;
+      a {
+        padding: 0 rhythm(4);
+      }
+      a,
+      img {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      img {
+        width: auto;
+        max-height: 180px;
+      }
+    }
+  }
+}

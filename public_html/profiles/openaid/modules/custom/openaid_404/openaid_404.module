@@ -1,0 +1,55 @@
+<?php
+/**
+ * @file
+ * openaid_404 functionality
+ */
+
+/**
+ * Create a 404 page
+ */
+function openaid_404_create_page() {
+  if (variable_get('site_404')) {
+    variable_set('original_site_404', variable_get('site_404'));
+  }
+  variable_set('site_404', 'openaid-404');
+  if (drupal_lookup_path('source', 'openaid-404') === FALSE) {
+    $info = entity_get_info('node');
+    if (isset($info['bundles']['page'])) {
+      // create the node
+      $page = new stdClass();
+      $page->type = 'page';
+      $page->title = '404 Not Found';
+      $language = LANGUAGE_NONE;
+      $page->language = $language;
+      $page->path = array(
+        'alias' => 'openaid-404',
+        'pathauto' => FALSE,
+      );
+      node_object_prepare($page);
+      $page->uid = 1;
+
+      // create the 404 page content
+      $content = "<p>This page does not exist or was not found.</p>";
+      $items = array();
+      if (module_exists('search')) {
+        array_push($items, l(t('Search the site'), 'search'));
+      }
+      array_push($items, 'Check the spelling of the URL');
+      array_push($items, l(t('Go back to the homepage'), ''));
+
+      $content .= theme('item_list', array('items' => $items));
+
+      $page->body[$language][0]['value'] = $content;
+      $page->body[$language][0]['format'] = filter_default_format();
+      $page = node_submit($page);
+      node_save($page);
+      return $page;
+    }
+
+    watchdog('openaid_404', '404 page was not created because the page content type does not exist', array(), WATCHDOG_ERROR);
+    return NULL;
+  }
+
+  watchdog('openaid_404', '404 page was not created because something already exists at /openaid-404', array(), WATCHDOG_NOTICE, l(t('View existing page'), 'openaid-404'));
+  return NULL;
+}

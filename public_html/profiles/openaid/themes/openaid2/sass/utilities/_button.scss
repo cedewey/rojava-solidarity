@@ -1,0 +1,126 @@
+//
+// @file
+// Button and link styles.
+// ---------------------------------------------------------------------------
+@mixin button {
+  @include inline-block;
+  text-decoration: none;
+  opacity: .85;
+  border: 0;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}
+
+// Button sizes
+// ---------------------------------------------------------------------------
+@mixin button--tiny {
+  padding: rhythm(.25, $fs-xxs) 6px;
+  @include adjust-font-size-to($fs-xxs);
+}
+
+@mixin button--small {
+  padding: rhythm(.5, $fs-s) 10px;
+  @include adjust-font-size-to($fs-s);
+}
+
+@mixin button--medium {
+  padding: rhythm(1.5, $fs-s) 20px;
+  @include adjust-font-size-to($fs-s, 4);
+  font-weight: bold;
+}
+
+@mixin button--large {
+  padding: rhythm(1.5, $fs-m) 30px;
+  @include adjust-font-size-to($fs-m, 3.5);
+  text-transform: uppercase;
+}
+
+// Button colors
+// ---------------------------------------------------------------------------
+@mixin button--primary {
+  background-color: $clr-btn--primary;
+  color: white;
+
+  &:hover,
+  &:focus {
+    color: white;
+    text-decoration: none;
+  }
+
+  &:active {
+  }
+}
+
+@mixin button--secondary {
+  background-color: $clr-btn--secondary;
+  color: white;
+
+  &:hover {
+    color: white;
+    text-decoration: none;
+  }
+
+  &:active {
+  }
+}
+
+// Button icons
+// ---------------------------------------------------------------------------
+@mixin button-icon($x-size: 18px, $y-size: 18px) {
+  content: '';
+  position: relative;
+  width: $x-size;
+  height: $y-size;
+  @include inline-block;
+}
+
+@mixin button-icon--before {
+  &:before {
+    top: -1px;
+    @include button-icon();
+  }
+}
+
+@mixin button-icon--after {
+  &:after {
+    top: -1px;
+    @include button-icon();
+  }
+}
+
+//
+// Button Arrow
+//
+
+@mixin button--arrow() {
+  
+  &:after {
+    @include fa-icon;
+    content: $fa-var-arrow-right;
+    margin-left: .66em;
+    @include transition;
+    position: relative;
+    vertical-align: .05em;
+    left: 0;
+    font-size: .875em;
+  }
+
+  // &:after {
+  //   @include transition;
+  //   position: relative;
+  //   left: 0;
+  //   // content: "\276f";
+  //   font-size: .875em;
+  //   vertical-align: 0;
+  //   margin-left: .66em;
+  // }
+
+  &:hover {
+    &:after {
+      left: .25em;
+    }
+  }
+}

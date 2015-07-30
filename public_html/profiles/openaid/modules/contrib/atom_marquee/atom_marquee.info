@@ -1,0 +1,13 @@
+name = Atom Marquee
+description = Add a marquee section to the front page.
+core = 7.x
+package = Atom
+version = 7.x-2.0
+dependencies[] = atom_marquee_feature
+
+; Information added by Drupal.org packaging script on 2015-04-09
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_marquee"
+datestamp = "1428612267"
+

@@ -1,0 +1,117 @@
+.block-atom-hero-map-image {
+  z-index: 2;
+}
+
+.block-atom-hero-message {
+  margin-bottom: rhythm(5);
+  padding-right: 180px;
+  // padding-left: 30px;
+  padding-top: rhythm(7);
+
+  @extend .fa-long-arrow-right;
+
+  strong {
+    @extend .fa-gear;
+  }
+  
+  &:before {
+    @include fa-icon;
+    height: 120px;
+    width: 120px;
+    overflow: hidden;
+    position: absolute;
+    top: 12px;
+    right: 30px;
+    font-size: 120px;
+    text-align: center;
+    line-height: 120px;
+    color: $gray-darker;
+    @include transform(rotate(-45deg));
+  }
+
+  strong {
+    @include inline-block;
+    background: $gray-darkest;
+    @extend .fa-gear;
+    margin-left: .15em;
+    margin-right: .15em;
+    padding-left: .25em;
+    padding-right: .25em;
+    @include border-radius(.25em);
+    vertical-align: baseline;
+    &:before {
+      @include fa-icon;
+      color: $gray;
+      font-weight: normal;
+      margin-right: .2em;
+    }
+  }
+}
+
+.block-atom-hero-statement {
+  margin-top: 0;
+  z-index: 1;
+  padding: rhythm(5) 0 0;
+
+  > .block-title {
+    @include adjust-font-size-to($fs-xl, 5);
+    margin-bottom: rhythm(1, $fs-xl);
+
+    @include breakpoint($tablet-wide) {
+      @include adjust-font-size-to($fs-xxxxl, 7);
+      margin-bottom: rhythm(2, $fs-xxxxl);
+    }
+  }
+
+  #highlighted & {
+    margin-top: 0;
+  }
+}
+
+#block-atom-hero-atom-hero {
+  margin-top: 0;
+}
+
+.hero-statement-text {
+  @include adjust-font-size-to($fs-l, 4.5);
+  color: $gray-lighter;
+}
+
+.hero-statement-link {
+  margin-top: rhythm(4);
+  padding-top: rhythm(5);
+  border-top: $gray-dark 1px solid;
+
+  > a {
+    @include button;
+    @include button--medium;
+    @include button--arrow;
+  }
+}
+
+
+
+//
+// Layout
+//
+
+@include breakpoint($tablet-wide) {
+  .block-atom-hero-map-image {
+    @include grid-span(15.5, 1);
+  }
+
+  .block-atom-hero-statement {
+    @include grid-span(7, 18);
+  }
+
+  .block-atom-hero-map-image,
+  .block-atom-hero-statement {
+    &:only-child {
+      float: none;
+      width: auto;
+      max-width: 745px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+name = Atom Volunteers Feature
+description = Creates a page listing people marked as "Volunteer".
+core = 7.x
+package = Atom
+
+; Avoid circular references
+; dependencies[] = atom_volunteers
+
+dependencies[] = atom_about
+dependencies[] = atom_person_feature
+dependencies[] = atom_volunteers
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = atom_volunteers
+features_exclude[dependencies][ctools] = ctools
+features_exclude[dependencies][atom_volunteers] = atom_volunteers
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

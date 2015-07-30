@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Volunteers Feature feature.
+ */
+
+include_once 'atom_volunteers_feature.features.inc';

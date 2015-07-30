@@ -1,0 +1,20 @@
+name = OpenAid Home Featured Partners Feature
+description = Adds featured partners to the homepage.
+core = 7.x
+package = OpenAid
+dependencies[] = atom_partners_feature
+dependencies[] = context
+dependencies[] = views
+features[context][] = openaid_home_featured_partners
+features[ctools][] = context:context:3
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = openaid_partners
+features_exclude[dependencies][ctools] = ctools
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

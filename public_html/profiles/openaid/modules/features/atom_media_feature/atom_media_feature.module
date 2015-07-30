@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Media feature.
+ */
+
+include_once 'atom_media_feature.features.inc';

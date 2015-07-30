@@ -1,0 +1,21 @@
+//
+// @file
+// Block generic styles.
+// ----------------------------------------------------------------------------
+
+.block + .block {
+  margin-top: rhythm(10);
+}
+
+// Block title
+.block-title {
+  @include adjust-font-size-to($fs-l);
+  margin-bottom: rhythm(4, $fs-l);
+}
+
+.block--meta {
+  border: 1px solid $clr-border;
+  border-top: 6px solid;
+  padding: rhythm(6) 50px;
+}
+

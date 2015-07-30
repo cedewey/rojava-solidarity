@@ -1,0 +1,191 @@
+<?php
+/**
+ * @file
+ * atom_contact functionality
+ */
+
+/**
+ * Creates the Contact webform.
+ *
+ * This will create a page node with a path of "/contact" if:
+ *
+ * - something doesn't already exist at /contact
+ * - and the page content type exists
+ *
+ * @return mixed
+ *   Return's the node object if successful or NULL if not.
+ */
+function atom_contact_create_page() {
+  if (drupal_lookup_path('source', 'contact') === FALSE) {
+    $info = entity_get_info('node');
+    if (isset($info['bundles']['webform'])) {
+
+      // create the node
+      $page = new stdClass();
+      $page->type = 'webform';
+      $page->title = 'Contact';
+      $language = LANGUAGE_NONE;
+      $page->language = $language;
+      $page->path = array(
+        'alias' => 'contact',
+        'pathauto' => FALSE,
+      );
+      $page->promote = 0;
+      $page->comment = 0;
+      node_object_prepare($page);
+      $page->uid = 1;
+      $page->body[$language][0]['value'] = "Please fill out the form to get in touch.";
+      $page->body[$language][0]['format'] = filter_default_format();
+      $page = node_submit($page);
+
+      // Create the webform components.
+      $components = array(
+        array(
+          'name' => 'Name',
+          'form_key' => 'name',
+          'type' => 'textfield',
+          'mandatory' => 1,
+          'weight' => 1,
+          'pid' => 0,
+          'extra' => array(
+            'title_display' => 'before',
+            'private' => 0,
+          ),
+        ),
+        array(
+          'name' => 'Email Address',
+          'form_key' => 'email_address',
+          'type' => 'email',
+          'mandatory' => 1,
+          'weight' => 2,
+          'pid' => 0,
+          'extra' => array(
+            'title_display' => 'before',
+            'private' => 0,
+          ),
+        ),
+        array(
+          'name' => 'Subject',
+          'form_key' => 'subject',
+          'type' => 'textfield',
+          'mandatory' => 1,
+          'weight' => 3,
+          'pid' => 0,
+          'extra' => array(
+            'title_display' => 'before',
+            'private' => 0,
+          ),
+        ),
+        array(
+          'name' => 'Message',
+          'form_key' => 'message',
+          'type' => 'textarea',
+          'mandatory' => 1,
+          'weight' => 4,
+          'pid' => 0,
+          'extra' => array(
+            'title_display' => 'before',
+            'private' => 0,
+          ),
+        ),
+      );
+      // Setup notification email.
+      $emails = array(
+        array(
+          'email' => variable_get('site_mail'),
+          'subject' => 3,
+          'from_name' => 1,
+          'from_address' => 2,
+          'template' => 'default',
+          'excluded_components' => array(),
+        ),
+      );
+      // Attach the webform to the node.
+      $page->webform = array(
+        'confirmation' => 'Thanks for getting in touch.',
+        'confirmation_format' => NULL,
+        'redirect_url' => '<confirmation>',
+        'status' => '1',
+        'block' => '0',
+        'teaser' => '0',
+        'allow_draft' => '0',
+        'auto_save' => '0',
+        'submit_notice' => '1',
+        'submit_text' => '',
+        'submit_limit' => '-1',
+        'submit_interval' => '-1',
+        'total_submit_limit' => '-1',
+        'total_submit_interval' => '-1',
+        'record_exists' => TRUE,
+        'roles' => array(
+          0 => '1',
+        ),
+        'emails' => $emails,
+        'components' => $components,
+      );
+      node_save($page);
+
+      // check if the menu exists
+      $menus = menu_get_menus();
+      if (!isset($menus['menu-footer-menu'])) {
+        watchdog('atom_contact', 'Contact page could not be added to the footer menu because the menu does not exist', array(), WATCHDOG_ERROR, l(t('Menus'), '/admin/structure/menu'));
+        return $page;
+      }
+
+      $menu_item = array(
+        'link_path' => 'node/' . $page->nid,
+        'link_title' => $page->title,
+        'menu_name' => 'menu-footer-menu',
+        'weight' => 0,
+        'language' => $page->language,
+        'plid' => 0,
+        'module' => 'menu',
+      );
+      $exists = db_query(
+        "SELECT mlid from {menu_links} WHERE link_title=:link_title AND link_path=:link_path AND menu_name=:menu_name",
+        array(
+          ':link_title' => $menu_item['link_title'],
+          ':link_path' => $menu_item['link_path'],
+          ':menu_name' => $menu_item['menu_name'],
+        )
+      )->fetchField();
+
+      if (!$exists) {
+        if ($mlid = menu_link_save($menu_item)) {
+          menu_cache_clear_all();
+          watchdog('atom_contact', 'Contact menu item added', array(), WATCHDOG_NOTICE, l(t('Footer menu'), '/admin/structure/menu/manage/menu-footer-menu/list'));
+        }
+        else {
+          watchdog('atom_contact', 'Contact menu item already was not saved', array(), WATCHDOG_ERROR, l(t('Footer menu'), '/admin/structure/menu/manage/menu-footer-menu/list'));
+        }
+      }
+      else {
+        watchdog('atom_contact', 'Contact menu item already exists', array(), WATCHDOG_NOTICE, l(t('Footer menu'), '/admin/structure/menu/manage/menu-footer-menu/list'));
+      }
+
+      watchdog('atom_contact', 'Contact page created', array(), WATCHDOG_NOTICE, l(t('View'), 'node/' . $page->nid));
+      return $page;
+    }
+
+    watchdog('atom_contact', 'Contact page was not created because the page content type does not exist', array(), WATCHDOG_ERROR);
+    return NULL;
+  }
+
+  watchdog('atom_contact', 'Contact page was not created because something already exists at /contact', array(), WATCHDOG_NOTICE);
+  return NULL;
+}
+
+/**
+ * Disable the footer menu link.
+ *
+ * Called from atom_contact_disable().
+ */
+function atom_contact_disable_menu_link() {
+  if ($path = drupal_get_normal_path('contact')) {
+    db_update('menu_links')
+      ->fields(array('hidden' => 1))
+      ->condition('link_path', $path)
+      ->condition('menu_name', 'menu-footer-menu')
+      ->execute();
+  }
+}

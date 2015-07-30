@@ -1,0 +1,138 @@
+// Compass plugins.
+@import "breakpoint";
+@import "singularitygs";
+
+// This needs to come above the compass plugins.
+@import "settings/*";
+
+// Compass.
+@import "compass";
+@import "utilities/**/*";
+
+//
+// element.scss
+//
+a {
+  color: $clr-primary;
+}
+
+input[type="submit"],
+button {
+  @include button--primary;
+}
+
+//
+// region_header.scss
+//
+#header {
+  .has-flyout & {
+    border-bottom: rhythm(.5) solid $clr-primary;
+  }
+}
+
+//
+// nav.scss
+//
+.nav-stacked.nav-buttons {
+  > li {
+    > a {
+      color: $clr-secondary;
+    }
+  }
+}
+
+//
+// nav--main.scss
+//
+#navigation {
+  background: $clr-primary;
+}
+
+#flyout #primary-menu {
+  .nav-link {
+    color: $clr-primary;
+
+    &.active-trail {
+      background-color: $clr-primary;
+    }
+  }
+}
+
+//
+// call-to-action.scss
+//
+.call-to-action--text {
+  background-color: $clr-secondary;
+}
+
+.button--call-to-action {
+  color: $clr-secondary;
+}
+
+//
+// donate.scss
+//
+.donate {
+  @include button--secondary;
+}
+
+//
+// hero.scss
+//
+.hero-statement-link {
+  > a {
+    @include button--primary;
+  }
+}
+
+//
+// link.scss
+//
+.link--button {
+  @include button--primary;
+}
+
+.button--secondary {
+  @include button--secondary;
+}
+
+.link--more {
+  @include button--primary;
+}
+
+.link--all {
+  &:after {
+    color: $clr-secondary;
+  }
+}
+
+//
+// openaid-subnav.scss
+//
+#block-menu-block-openaid-subnav-1 {
+  .block-title {
+    > a {
+      color: $clr-secondary;
+    }
+  }
+}
+
+//
+// project.scss
+//
+.group-project-links {
+  a {
+    color: $clr-primary;
+
+    &:before {
+      color: $gray-darker;
+    }
+  }
+}
+
+//
+// block.scss
+//
+.block--meta {
+  border-top-color: $clr-secondary;
+}

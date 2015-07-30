@@ -1,0 +1,144 @@
+//
+// @file
+// Gallery specific styles.
+// ----------------------------------------------------------------------------
+
+.gallery--teaser {
+  padding-top: 55%; // Aspect ratio of the background-image.
+  background-color: $black;
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  background-size: 100% auto;
+  color: $gray-lighter;
+  color: rgba($white, .65);
+  width: 100%;
+  position: relative;
+  @include transition(.25s);
+
+  .link--article &,
+  .link--article & {
+    color: rgba($white, .8);
+    // opacity: .9;
+  }
+
+  .link--article:hover &,
+  .link--article:focus & {
+    // opacity: 1;
+    color: $white;
+    // color: rgba($white, 1);
+  }
+
+  // &.node-image-gallery {
+  //   padding-top: 0;
+  // }
+
+  @include breakpoint($tablet) {
+    background-position: 50%;
+    background-size: cover;
+    min-height: 408px;
+    padding-top: 210px;
+    // &.node-image-gallery {
+    //   padding-top: 0;
+    // }
+  }
+
+  .title {
+    margin-top: 0;
+    margin-bottom: rhythm(1, $fs-xxxl);
+
+    > a {
+      color: $gray-white;
+
+      &:hover,
+      &:focus {
+        color: $white;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.gallery-content {
+  position: relative;
+  padding: rhythm(3);
+  background-color: $gray-darkest;
+  @include transition(.25s);
+  .node-image-gallery & {
+    padding: rhythm(5);
+  }
+
+  .link--article:hover &,
+  .link--article:focus & {
+    background-color: $gray-black;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .field,
+  .field-items,
+  .field-item {
+    display: inline;
+  }
+
+  @include breakpoint($tablet) {
+    // padding: rhythm(5) column-span(.5, 1, 11.5) rhythm(5) column-span(1.5, 1, 11.5);
+    // margin-left: 30px;
+    background-color: rgba($gray-darkest, .95);
+    margin-right: 10%;
+    margin-bottom: rhythm(3);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    .link--article & {
+      margin-right: 30px;
+    }
+  }
+
+  @include breakpoint($tablet) {
+    max-width: 745px;
+  }
+}
+
+.gallery-links {
+  margin-top: rhythm(2);
+  color: $gray-dark;
+
+  > a {
+    color: $white;
+    opacity: .85;
+    text-decoration: none;
+    margin-left: .5em;
+    margin-right: .5em;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    @include button--arrow;
+
+    &:after {
+    //   @include transition();
+    //   position: relative;
+    //   left: 0;
+    //   content: "\276f";
+      font-size: .75em;
+      color: $gray;
+    //   font-weight: 800;
+    //   vertical-align: 0;
+    //   margin-left: .5em;
+    }
+
+    &:hover,
+    &:focus {
+      opacity: 1;
+
+      &:after {
+        color: $white;
+        left: .25em;
+      }
+    }
+  }
+}

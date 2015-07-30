@@ -1,0 +1,18 @@
+name = "Atom WYSIWYG"
+description = Enables WYSIWYG editing of content (bold, italic, links, etc.).
+core = "7.x"
+package = "Atom"
+
+dependencies[] = cinc
+dependencies[] = ckeditor_link
+dependencies[] = emptyparagraphkiller
+dependencies[] = filter
+dependencies[] = libraries
+dependencies[] = wysiwyg
+
+; Information added by Drupal.org packaging script on 2015-07-01
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_wysiwyg"
+datestamp = "1435763940"
+

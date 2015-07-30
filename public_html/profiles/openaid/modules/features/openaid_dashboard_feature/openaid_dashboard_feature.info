@@ -1,0 +1,29 @@
+name = OpenAid Dashboard Feature
+description = Provides important dashboard links for OpenAid.
+core = 7.x
+package = OpenAid
+dependencies[] = comment
+dependencies[] = context
+dependencies[] = dashboard
+dependencies[] = features
+dependencies[] = menu
+dependencies[] = search
+features[context][] = openaid_dashboard
+features[ctools][] = context:context:3
+features[features_api][] = api:2
+features[menu_custom][] = menu-dashboard-links
+features[menu_links][] = menu-dashboard-links_add-content:node/add
+features[menu_links][] = menu-dashboard-links_add-media-images-audio-video:admin/content/file
+features[menu_links][] = menu-dashboard-links_additional-openaid-settings:admin/config/atom
+features[menu_links][] = menu-dashboard-links_edit-content:admin/content
+features[menu_links][] = menu-dashboard-links_edit-site-appearance-colors-logo-copyright:admin/appearance/settings/openaid2
+features[menu_links][] = menu-dashboard-links_manage-comments:admin/content/comment
+features[menu_links][] = menu-dashboard-links_manage-openaid-features:admin/modules/openaid
+features[menu_links][] = menu-dashboard-links_manage-users:admin/people
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

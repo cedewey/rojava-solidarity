@@ -1,0 +1,5 @@
+env
+vagrant
+node_modules
+package.json
+gulpfile.js

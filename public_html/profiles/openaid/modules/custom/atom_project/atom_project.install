@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function atom_project_uninstall() {
+  variable_del('atom_project_map_height');
+  variable_del('atom_project_map_default_centerpoint');
+  variable_del('atom_project_map_center_on_project');
+  variable_get('atom_project_earth_tileset');
+  variable_get('atom_project_earth_tileset_attribution');
+  variable_del('atom_project_marker_icon_anchor');
+  variable_del('atom_project_marker_shadow_anchor');
+  variable_del('atom_project_marker_popup_anchor');
+  variable_del('atom_project_marker_url');
+  variable_del('atom_project_marker_retina_url');
+  variable_del('atom_project_marker_shadow_url');
+  variable_del('atom_project_marker_shadow_retina_url');
+  variable_del('atom_project_marker_file');
+  variable_del('atom_project_marker_retina_file');
+  variable_del('atom_project_marker_shadow_file');
+  variable_del('atom_project_marker_shadow_retina_file');
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the atom_search_feature feature.
+ */
+
+include_once 'atom_search_feature.features.inc';

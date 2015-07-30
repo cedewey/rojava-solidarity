@@ -1,0 +1,60 @@
+.call-to-action {
+  margin-bottom: rhythm(5);
+  @include breakpoint($tablet-wide) {
+    margin-bottom: rhythm(10);
+  }
+  text-align: center;
+
+  img {
+    display: block;
+    margin: auto;
+  }
+}
+
+.call-to-action--text {
+  position: relative;
+  padding: rhythm(5) 15px rhythm(4);
+  color: $white;
+
+  @include breakpoint($tablet-wide) {
+    padding: rhythm(10) 30px rhythm(9);
+  }
+
+  h1 {
+    text-transform: uppercase;
+    font-weight: $fw-regular;
+    color: $white;
+    @include adjust-font-size-to($fs-xxxl, 6);
+    padding-bottom: rhythm(4, $fs-xxxl);
+    margin-bottom: rhythm(4, $fs-xxxl);
+    margin-top: 0;
+    border-bottom: 1px solid rgba($white, .3);
+  }
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: rhythm(2);
+    width: 100%;
+    background-image: inline-image("diagonal-pattern.png");
+  }
+}
+
+.button--call-to-action {
+  @include button;
+  @include button--large;
+  background-color: $white;
+  margin-top: rhythm(4, $fs-s);
+  text-transform: uppercase;
+  opacity: .85;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}
+
+

@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function openaid_home_enable() {
+  openaid_home_create_page();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function openaid_home_uninstall() {
+  if ($original = variable_get('original_site_frontpage')) {
+    variable_set('site_frontpage', $original);
+  }
+  variable_del('original_site_frontpage');
+}

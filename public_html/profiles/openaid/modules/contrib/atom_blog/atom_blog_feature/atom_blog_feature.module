@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Blog Feature feature.
+ */
+
+include_once 'atom_blog_feature.features.inc';

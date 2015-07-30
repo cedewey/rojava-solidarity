@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function openaid_404_enable() {
+  openaid_404_create_page();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function openaid_404_uninstall() {
+  if ($original = variable_get('original_site_404')) {
+    variable_set('site_404', $original);
+  }
+  variable_del('original_site_404');
+}

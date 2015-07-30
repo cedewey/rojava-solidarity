@@ -1,0 +1,105 @@
+<?php
+/**
+ * @file
+ * atom_staff functionality
+ */
+
+/**
+ * Creates the Staff Menu Link
+ */
+function atom_staff_init() {
+  static $already_run = FALSE;
+
+  // this should only happen once, so check if it has and exit as needed.
+  if (variable_get('atom_staff_menu_setup', FALSE) || $already_run) {
+    return;
+  }
+
+  // check if the menu exists
+  $menus = menu_get_menus();
+  if (!isset($menus['main-menu'])) {
+    watchdog('atom_staff', 'Staff could not be added to the main menu because the menu does not exist', array(), WATCHDOG_ERROR, l(t('Menus'), '/admin/structure/menu'));
+    variable_set('atom_staff_menu_setup', TRUE);
+    $already_run = TRUE;
+    return FALSE;
+  }
+
+  // flush caches so the new view is recognized
+  drupal_flush_all_caches();
+
+  // check if the parent page and view exist
+  if (drupal_lookup_path('source', 'about') === FALSE || drupal_valid_path('about/staff') === FALSE) {
+    return;
+  }
+
+  $menu_item = array(
+    'link_path' => 'about/staff',
+    'link_title' => 'Staff',
+    'menu_name' => 'main-menu',
+    'weight' => 0,
+    'plid' => atom_staff_get_mlid(1, 'About'),
+    'module' => 'menu',
+  );
+  $exists = db_query(
+    "SELECT mlid from {menu_links} WHERE link_title=:link_title AND link_path=:link_path AND menu_name=:menu_name",
+    array(
+      ':link_title' => $menu_item['link_title'],
+      ':link_path' => $menu_item['link_path'],
+      ':menu_name' => $menu_item['menu_name'],
+    )
+  )->fetchField();
+
+  if (!$exists) {
+    if (menu_link_save($menu_item)) {
+      menu_cache_clear_all();
+    }
+  }
+
+  variable_set('atom_staff_menu_setup', TRUE);
+  $already_run = TRUE;
+}
+
+/**
+ * Disable the main menu link.
+ *
+ * Called from atom_staff_disable().
+ */
+function atom_staff_disable_menu_link() {
+  if ($path = drupal_get_normal_path('about/staff')) {
+    db_update('menu_links')
+      ->fields(array('hidden' => 1))
+      ->condition('link_path', $path)
+      ->condition('menu_name', 'main-menu')
+      ->execute();
+  }
+}
+
+/**
+ * Get mlid of menu item
+ *
+ * @param int $depth
+ *   the depth of the menu item ID you are seeking to find
+ * @param string $link_title
+ *   Parent link name
+ * @param string $menu
+ *   defaults to main-menu
+ *
+ * @return string
+ *   Parent item mlid
+ */
+function atom_staff_get_mlid($depth, $link_title, $menu = NULL) {
+  if (empty($menu)) {
+    $menu = 'main-menu';
+  }
+
+  // Grab the mlid of the parent menu link item
+  $result = db_select('menu_links', 'm')
+    ->fields('m', array('mlid'))
+    ->condition('menu_name', $menu)
+    ->condition('depth', $depth)
+    ->condition('link_title', $link_title)
+    ->execute()
+    ->fetchAssoc();
+
+  return $result['mlid'];
+}

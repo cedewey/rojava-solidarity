@@ -1,0 +1,18 @@
+name = Atom Blog and Project Connector
+description = Adds the ability for blog posts to reference projects.
+core = 7.x
+package = Atom
+dependencies[] = atom_blog_feature
+dependencies[] = atom_project_feature
+dependencies[] = entityreference
+dependencies[] = features
+features[features_api][] = api:2
+features[field_base][] = field_blog_related_projects
+features[field_instance][] = node-blog_post-field_blog_related_projects
+
+; Information added by Drupal.org packaging script on 2015-04-21
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_blog"
+datestamp = "1429630082"
+

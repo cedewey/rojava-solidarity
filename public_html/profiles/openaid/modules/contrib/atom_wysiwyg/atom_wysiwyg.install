@@ -1,0 +1,154 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function atom_wysiwyg_enable() {
+
+  variable_set('filter_fallback_format', 'plain_text');
+  atom_wysiwyg_set_text_filters();
+  atom_wysiwyg_set_wysiwyg_profiles();
+
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function atom_wysiwyg_requirements($phase) {
+  $requirements = array();
+  if ($phase === 'runtime') {
+
+  }
+  return $requirements;
+}
+
+/**
+ * Sets text filters.
+ */
+function atom_wysiwyg_set_text_filters() {
+
+  CINC::init('FilterFormat')->machine_name('filtered_html')
+    ->set('name', 'Filtered HTML')
+    ->set('status', 1)
+    ->set('weight', 0)
+    ->add_filter('ckeditor_link_filter')
+    ->add_filter('filter_html')
+    ->add_filter('filter_url')
+    ->add_filter('filter_autop')
+    ->add_filter('media_filter')
+    ->add_filter('filter_htmlcorrector')
+    ->create_or_update();
+
+  CINC::init('FilterFormat')->machine_name('full_html')
+    ->set('name', 'Full HTML')
+    ->set('status', 1)
+    ->set('weight', 1)
+    ->add_filter('ckeditor_link_filter')
+    ->add_filter('filter_autop')
+    ->add_filter('filter_url')
+    ->add_filter('media_filter')
+    ->add_filter('filter_htmlcorrector')
+    ->create_or_update();
+
+}
+
+/**
+ * Sets WYSIWYG profiles.
+ */
+function atom_wysiwyg_set_wysiwyg_profiles() {
+
+  CINC::init('WysiwygProfile')->machine_name('filtered_html')
+    ->set('editor', 'ckeditor')
+    ->set('settings', array(
+      'default' => 1,
+      'user_choose' => 0,
+      'show_toggle' => 1,
+      'add_to_summaries' => 1,
+      'theme' => '',
+      'language' => 'en',
+      'buttons' => array(
+        'default' => array(
+          'Bold' => 1,
+          'Italic' => 1,
+          'BulletedList' => 1,
+          'NumberedList' => 1,
+          'Link' => 1,
+          'Unlink' => 1,
+          'Blockquote' => 1,
+          'Source' => 1,
+          'PasteFromWord' => 1,
+          'SpecialChar' => 1,
+          'Format' => 1,
+          'SpellChecker' => 1,
+        ),
+        'drupal_path' => array(
+          'Link' => 1,
+        ),
+        'drupal' => array(
+          'media' => 1,
+          'break' => 1,
+        ),
+      ),
+      'toolbarLocation' => 'top',
+      'resize_enabled' => 1,
+      'default_toolbar_grouping' => 0,
+      'simple_source_formatting' => 1,
+      'acf_mode' => 0,
+      'acf_allowed_content' => '',
+      'css_setting' => 'theme',
+      'css_path' => '',
+      'stylesSet' => '',
+      'block_formats' => 'p,h2,h3,h4, blockquote',
+      'advanced__active_tab' => 'edit-basic',
+      'forcePasteAsPlainText' => 0,
+    ))
+    ->create_or_update();
+
+  CINC::init('WysiwygProfile')->machine_name('full_html')
+    ->set('editor', 'ckeditor')
+    ->set('settings', array(
+      'default' => 1,
+      'user_choose' => 0,
+      'show_toggle' => 1,
+      'add_to_summaries' => 1,
+      'theme' => 'advanced',
+      'language' => 'en',
+      'buttons' => array(
+        'default' => array(
+          'Bold' => 1,
+          'Italic' => 1,
+          'BulletedList' => 1,
+          'NumberedList' => 1,
+          'Link' => 1,
+          'Unlink' => 1,
+          'Blockquote' => 1,
+          'Source' => 1,
+          'PasteFromWord' => 1,
+          'SpecialChar' => 1,
+          'Format' => 1,
+          'SpellChecker' => 1,
+        ),
+        'drupal_path' => array(
+          'Link' => 1,
+        ),
+        'drupal' => array(
+          'media' => 1,
+          'break' => 1,
+        ),
+      ),
+      'toolbarLocation' => 'top',
+      'resize_enabled' => 1,
+      'default_toolbar_grouping' => 0,
+      'simple_source_formatting' => 1,
+      'acf_mode' => 0,
+      'acf_allowed_content' => '',
+      'css_setting' => 'none',
+      'css_path' => '',
+      'stylesSet' => '',
+      'block_formats' => 'p,h2,h3,h4, blockquote',
+      'advanced__active_tab' => 'edit-basic',
+      'forcePasteAsPlainText' => 0,
+    ))
+    ->create_or_update();
+
+}

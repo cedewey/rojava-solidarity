@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Marquee.
+ */
+
+/**
+ * Implements hook_block_info().
+ */
+function atom_marquee_block_info() {
+  $blocks = array();
+  $blocks['marquee_home'] = array(
+    'info' => t('Marquee'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function atom_marquee_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'marquee_home':
+      // Marquee has no subject
+      $block['subject'] = '';
+
+      // Return the most recently posted marquee node
+      $query = new EntityFieldQuery();
+      $query->entityCondition('entity_type', 'node')
+        ->entityCondition('bundle', 'marquee')
+        ->range(0, 1)
+        ->propertyCondition('status', 1)
+        ->propertyOrderBy('changed', 'DESC');
+      $results = $query->execute();
+      if ($results && isset($results['node'])) {
+        $nid = array_shift(array_keys($results['node']));
+        $node = node_load($nid);
+        // Display the result
+        $block['content'] = node_view($node, 'teaser');
+      }
+      else {
+        // No marquee nodes exist, so prompt the user to create one
+        $block['content'] = t('<a href="@create_link">Create a marquee</a> and it will show up here.', array('@create_link' => '/node/add/marquee'));
+      }
+      break;
+  }
+
+  return $block;
+}

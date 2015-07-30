@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Social Sharing Feature feature.
+ */
+
+include_once 'atom_social_sharing_feature.features.inc';

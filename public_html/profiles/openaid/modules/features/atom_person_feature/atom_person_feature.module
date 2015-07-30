@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Person Feature feature.
+ */
+
+include_once 'atom_person_feature.features.inc';

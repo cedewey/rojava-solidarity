@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function atom_donate_uninstall() {
+  variable_del('atom_donate_text');
+  variable_del('atom_donate_path');
+}
+
+/**
+ * Implements hook_enable().
+ */
+function atom_donate_enable() {
+  atom_donate_create_donate_page();
+}

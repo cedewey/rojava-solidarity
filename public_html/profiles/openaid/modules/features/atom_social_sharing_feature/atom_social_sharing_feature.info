@@ -1,0 +1,22 @@
+name = Atom Social Sharing Feature
+description = Allows content to be shared to social networks with links.
+core = 7.x
+package = Atom
+dependencies[] = ctools
+dependencies[] = sharethis
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = sharethis_button_option
+features[variable][] = sharethis_comments
+features[variable][] = sharethis_image_options
+features[variable][] = sharethis_location
+features[variable][] = sharethis_option_extras
+features[variable][] = sharethis_widget_option
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

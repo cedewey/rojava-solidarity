@@ -1,0 +1,86 @@
+//
+// @file
+// Header region styles.
+// ----------------------------------------------------------------------------
+
+// Header region
+#flyout {
+  display: none;
+  position: absolute;
+  padding-right: 44px;
+  top: 0;
+  z-index: 1000; // Higher than Admin Menu.
+  @include transition(.5s);
+
+  .has-flyout & {
+    display: block;
+  }
+
+  .header-toggle {
+    position: absolute;
+    right: 43px;
+    top: 24px;
+  }
+
+  &[aria-expanded="false"] {
+    @include transform(translate3d(-100%, 0, 0));
+    background-color: rgba($black, 0);
+
+    .no-css-transforms & {
+      left: -100%;
+    }
+
+    .header-toggle {
+      right: -64px;
+
+      @include breakpoint($tablet) {
+        right: -80px;
+      }
+    }
+  }
+
+  &[aria-expanded="true"] {
+    position: fixed;
+    @include transform(translate3d(0, 0, 0));
+    @include box-shadow(rgba($black, .4) 2px 0 10px );
+    background-color: rgba($black, .6);
+
+    .no-css-transforms & {
+      left: 0;
+    }
+  }
+
+  #block-translate-this-button {
+    float: left;
+    margin: rhythm(4) 0;
+  }
+
+  #block-atom-donate-atom-donate {
+    float: right;
+    margin: rhythm(4) 0;
+  }
+
+  #block-search-form {
+    margin: rhythm(4) auto;
+    clear: both;
+  }
+
+  .donate {
+    font-size: .75em;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #utility {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+#flyout-inner {
+  position: relative;
+  overflow-y: scroll;
+  margin-right: 44px;
+  height: 100%;
+  background-color: $white;
+}

@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function atom_contact_enable() {
+  atom_contact_create_page();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function atom_contact_disable() {
+  atom_contact_disable_menu_link();
+}

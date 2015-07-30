@@ -1,0 +1,52 @@
+;Information
+name = OpenAid 2
+description = Custom OpenAid Theme - Take 2
+core = 7.x
+base theme = center
+
+;Settings
+settings[nuke_fields]       = FALSE
+
+;-------------- R E G I O N S -------------
+
+regions[page_top]           = Page Top
+regions[page_bottom]        = Page Bottom
+
+regions[utility]            = Utility
+regions[top_banner]         = Top Banner
+regions[header]             = Header
+regions[navigation]         = Navigation
+
+regions[help]               = Help
+
+regions[marquee]            = Marquee
+regions[highlighted]        = Highlighted
+regions[featured]           = Featured
+regions[above_content]      = Above Content
+regions[content]            = Content
+regions[sidebar]            = Sidebar
+regions[subnav]             = Sub Navigation
+regions[below_content]      = Below Content
+
+regions[footer]             = Footer
+regions[admin_footer]       = Admin Footer
+
+;-------------- C S S -------------
+stylesheets[all][] = css/screen.css
+stylesheets[all][] = css/user-overrides.css
+
+stylesheets[print][] = css/override/keep/print.css
+
+;-------------- J S -------------
+scripts[] = js/toggle/toggle.js
+scripts[] = js/mainNav.js
+scripts[] = js/main.js
+
+; Information added by Drupal.org packaging script on 2014-03-04
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

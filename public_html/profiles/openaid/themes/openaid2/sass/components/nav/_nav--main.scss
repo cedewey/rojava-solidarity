@@ -1,0 +1,132 @@
+#primary-menu {
+  margin: 0;
+
+  .nav-item {
+    padding: 0;
+    display: block;
+    margin: 0;
+  }
+
+  .nav-link {
+    display: block;
+    color: $white;
+    padding: rhythm(2) 20px;
+    position: relative;
+    border-bottom: 1px solid rgba($white, .3);
+    @include transition;
+
+    // &:after,
+    // &:before {
+    //   @include transition;
+    //   position: relative;
+    //   font-size: .66em;
+    //   vertical-align: .1em;
+    //   opacity: 0;
+    // }
+
+    // &:before {
+    //   right: 0;
+    //   content: "\276e";
+    //   margin-right: .25em;
+    // }
+
+    // &:after {
+    //   left: 0;
+    //   content: "\276f";
+    //   margin-left: .25em;
+    // }
+  
+    &:hover {
+      background-color: $gray-white;
+    }
+
+    &:hover,
+    &:focus,
+    &.active-trail {
+      text-decoration: none;
+
+      // &:after {
+      //   left: .5em;
+      //   opacity: 1;
+      // }
+    }
+  }
+
+  @include breakpoint($tablet) {
+    padding-left: 15px;
+    padding-right: 15px;
+    .nav-item {
+      @include inline-block;
+      padding: 0;
+    }
+
+    .nav-link {
+      padding: rhythm(2) 15px;
+      border-bottom: 0;
+      overflow: hidden;
+      position: relative;
+
+      &:hover {
+        background: none;
+        // background: rgba($black, .1);
+      }
+
+      &:before {
+        content: "";
+        // width: 0;
+        height: 0;
+        // border-left: 6px solid transparent;
+        // border-right: 6px solid transparent;
+        border-top: 3px solid $white;
+        position: absolute;
+        // left: 50%;
+        left: 15px;
+        right: 15px;
+        top: 0;
+        // margin-left: -6px;
+        margin-top: -3px;
+        @include transition;
+      }
+
+      &:hover,
+      &:focus,
+      &.active-trail {
+        &:before {
+          margin-top: 0;
+          @include transition;
+        }
+      }
+    }
+  }
+
+  @include breakpoint($desktop) {
+    padding-left: 0;
+    padding-right: 0;
+    .nav-item:first-child {
+      .nav-link {
+        // padding-left: 0;
+        margin-left: -15px;
+      }
+    }
+  }
+}
+
+#flyout #navigation {
+  background-color: $white;
+}
+
+#flyout #primary-menu {
+  border-top: 1px solid $gray-lightest;
+
+  .nav-link {
+    border-bottom: 1px solid $gray-lightest;
+
+    &.active-trail {
+      color: $white;
+    }
+
+    &:before {
+      content: none;
+    }
+  }
+}

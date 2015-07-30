@@ -1,0 +1,44 @@
+.sharethis-buttons {
+  position: relative;
+  display: inline-block;
+}
+
+.sharethis-toggle {
+  position: relative;
+  color: $white;
+  border: 0;
+  background-color: $gray-dark;
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 2px 2px 0 2px;
+  font-weight: $fw-regular;
+  @include adjust-font-size-to($fs-xs, 2.5);
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:after {
+    content: "";
+    display: block;
+    height: 0;
+    width: 0;
+    border-left: 6px solid $gray-dark;
+    border-top: 6px solid transparent;
+    position: absolute;
+    left: 100%;
+    bottom: 0;
+  }
+}
+
+.sharethis-wrapper {
+  visibility: hidden;
+  position: absolute;
+  min-width: 300px;
+
+  &:hover,
+  &:focus,
+  .sharethis-toggle:hover + &,
+  .sharethis-toggle:active + &,
+  .sharethis-toggle:focus + & {
+    visibility: visible;
+  }
+}

@@ -1,0 +1,21 @@
+<?php
+/**
+ * Implements hook_menu_block_blocks().
+ */
+function openaid_base_menu_block_blocks() {
+  // The array key is the block delta used by menu block.
+  return array(
+    'openaid_base-1' => array(
+      'menu_name'   => 'menu-footer-menu',
+      'parent_mlid' => 0,
+      'title_link'  => 0,
+      'admin_title' => 'Menu Block: Footer Menu',
+      'level'       => 1,
+      'follow'      => '0',
+      'depth'       => 0,
+      'expanded'    => 0,
+      'sort'        => 0,
+    ),
+  );
+}
+

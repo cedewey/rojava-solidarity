@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Hero Map Image Feature feature.
+ */
+
+include_once 'atom_hero_map_image_feature.features.inc';

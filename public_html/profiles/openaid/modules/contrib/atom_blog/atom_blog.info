@@ -1,0 +1,25 @@
+name = Atom Blog
+description = Provides blogging functionality, a blog list page and menu item.
+core = 7.x
+package = Atom
+
+dependencies[] = atom_blog_feature
+dependencies[] = atom_person_feature
+dependencies[] = atom_social_sharing_feature
+dependencies[] = atom_tags_feature
+dependencies[] = atom_topics_feature
+dependencies[] = context
+dependencies[] = entityreference
+dependencies[] = features
+dependencies[] = pathauto
+dependencies[] = references_dialog
+dependencies[] = strongarm
+dependencies[] = views
+
+
+; Information added by Drupal.org packaging script on 2015-04-21
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_blog"
+datestamp = "1429630082"
+

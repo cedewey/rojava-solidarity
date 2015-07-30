@@ -1,0 +1,26 @@
+name = Atom Search Feature
+description = Enables site-wide search and adds a search form to the header.
+core = 7.x
+package = Atom
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = search
+dependencies[] = strongarm
+dependencies[] = transliteration
+features[context][] = atom_search
+features[ctools][] = context:context:3
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[user_permission][] = search content
+features[variable][] = search_active_modules
+features[variable][] = search_cron_limit
+features[variable][] = search_default_module
+features[variable][] = transliteration_search
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

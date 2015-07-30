@@ -1,0 +1,28 @@
+//
+// @file
+// Sidebar after styles styles.
+
+.l--sidebar-after {
+  > .l-primary,
+  > .l-secondary {
+    margin-bottom: rhythm(11);
+  }
+
+  @include breakpoint($tablet-wide) {
+    > .l-primary {
+      @include grid-span(15.5, 1);
+      clear: left;
+
+      &:first-child:last-child {
+        float: none;
+        width: 100%;
+        margin: auto;
+      }
+    }
+
+    > .l-secondary {
+      @include grid-span(7, 18);
+      clear: right;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+@import "utilities/calc";
+
+$bp-2-column: 44em;
+$bp-3-column: 56em;
+$bp-1-sidebar: 56em;
+
+// Breakpoint.
+$mobile: 480px;
+$mobile-wide: 600px;
+$tablet: 768px;
+$tablet-wide: 992px;
+$desktop: 1212px;
+$desktop-wide: 1382px;
+
+// Width.
+$w-full: 1152px;
+$w-content: 620px;
+$w-sidebar: 320px;
+$w-sidebar-first: 320px;
+$w-gutter: 30px;
+$w-gutter-half: $w-gutter / 2;

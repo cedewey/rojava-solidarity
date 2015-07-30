@@ -1,0 +1,29 @@
+#block-menu-block-openaid-base-1 .nav {
+  margin-bottom: rhythm(1);
+  padding: 0;
+  text-align: center;
+
+  > li {
+    display: inline;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+
+    > a {
+      color: $gray-darker;
+      padding: rhythm(1.5, $fs-xs);
+      @include adjust-font-size-to($fs-xs);
+
+      &:hover,
+      &:focus {
+        color: $gray-black;
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function atom_privacy_policy_enable() {
+  atom_privacy_policy_create_page();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function atom_privacy_policy_disable() {
+  atom_privacy_policy_disable_menu_link();
+}

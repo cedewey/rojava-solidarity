@@ -1,0 +1,17 @@
+<?php
+/**
+ * @file
+ * atom_project_sample_content functionality
+ */
+
+/**
+ * Implements hook_migrate_api().
+ */
+function atom_project_sample_content_migrate_api() {
+  return array(
+    'api' => 2,
+    'migrations' => array(
+      'AtomProjectSampleContent' => array('class_name' => 'AtomProjectSampleContentMigration'),
+    ),
+  );
+}

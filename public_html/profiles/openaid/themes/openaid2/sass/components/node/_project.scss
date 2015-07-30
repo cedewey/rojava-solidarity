@@ -1,0 +1,187 @@
+.project--full {
+  margin-top: rhythm(5);
+}
+
+.node-project.node-teaser {
+  .title {
+    @include adjust-font-size-to($fs-xl, 5);
+    margin-bottom: rhythm(2, $fs-xl);
+
+    > a {
+      color: $gray-darker;
+
+      &:hover,
+      &:focus {
+        color: $black;
+      }
+    }
+  }
+
+  .link--more-wrapper {
+    border-color: $clr-border;
+    border: none;
+    padding-top: 0;
+  }
+}
+
+.node-project.node-promoted {
+  .field--field-project-image {
+    .list--3up & {
+      background: $white;
+      line-height: 210px;
+      text-align: center;
+      a {
+        padding: 0 rhythm(4);
+      }
+      a,
+      img {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      img {
+        width: auto;
+        max-height: 180px;
+      }
+    }
+  }
+}
+
+.view-display-id-page .node-project {
+  @include breakpoint($mobile-wide) {
+    padding-left: column-span(7, 1);
+
+    .field--field-project-image {
+      float: left;
+      @include grid-span(6, -6, 17, $output-style: 'isolation');
+    }
+  }
+}
+
+.group-project-links {
+  margin-bottom: rhythm(6);
+
+  .field + .field {
+    margin-top: rhythm(2);
+  }
+
+  @include breakpoint($tablet) {
+    .field,
+    .field-items,
+    .field-item {
+      display: inline;
+    }
+
+    .field {
+      margin-right: 1.5em;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    opacity: .7;
+
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+
+    &:before {
+      @extend .fa;
+      margin-right: .5em;
+      opacity: .4;
+      width: 1em;
+      text-align: center;
+    }
+
+    &:hover:before {
+      opacity: .8;
+    }
+  }
+}
+
+.field--field-project-link-facebook a { @extend .fa-facebook; }
+.field--field-project-link-twitter a { @extend .fa-twitter; }
+.field--field-project-website a { @extend .fa-globe; }
+
+.field--field-project-image {
+  margin-bottom: rhythm(5);
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.field--field-project-image + .group-project-meta-contact {
+  margin-top: rhythm(5);
+  padding-top: rhythm(4);
+  border-top: 1px solid $clr-border;
+}
+
+.group-project-meta-contact {
+
+  h3 {
+    @include adjust-font-size-to($fs-xs);
+  }
+
+  .field + .field {
+    margin-top: rhythm(2);
+  }
+
+  a {
+    color: $gray;
+
+    &:hover {
+      color: $gray-darker;
+    }
+  }
+}
+
+.field--field-project-contact-name {
+  @include adjust-font-size-to($fs-xxl);
+  margin-bottom: rhythm(2, $fs-xxl);
+}
+
+
+#block-atom-project-atom-project-resources {
+  h3 {
+    @include adjust-font-size-to($fs-xxl);
+    border-bottom: 1px solid $clr-border;
+    padding-bottom: rhythm(1, $fs-xxl);
+    margin-bottom: rhythm(4, $fs-xxl);
+  }
+}
+
+//
+// Highlighted region
+//
+
+.atom-project-highlights--image-gallery {
+  max-width: 672px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .atom-project-highlights--map + & {
+    margin-top: rhythm(8);
+  }
+}
+
+@include breakpoint($tablet-wide) {
+  .atom-project-highlights--map {
+    @include grid-span(9, 1);
+
+    &:first-child:last-child {
+      float: none;
+      width: 100%;
+      margin: auto;
+    }
+  }
+
+  .atom-project-highlights--map + .atom-project-highlights--image-gallery {
+    @include grid-span(14, 11);
+    margin-top: 0;
+  }
+}
+

@@ -1,0 +1,35 @@
+.translate-this-button {
+  @extend .fa-comment;
+  text-decoration: none;
+  color: $gray-darker;
+  @include adjust-font-size-to($fs-xs);
+  text-transform: uppercase;
+  opacity: .7;
+
+  &:before {
+    @extend .fa;
+    color: $gray-light;
+    font-size: 1.5em;
+    margin-right: .25em;
+  }
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}
+
+.ttb-overlay {
+  max-width: 100% !important;
+}
+
+.ttb-panel {
+  max-width: 90% !important;
+
+  .ttb-overlay + & {
+    left: 0 !important;
+    top: rhythm(8) !important;
+    right: 0 !important;
+    margin: auto;
+  }
+}

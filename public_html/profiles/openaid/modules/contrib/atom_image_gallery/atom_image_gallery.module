@@ -1,0 +1,124 @@
+<?php
+/**
+ * @file
+ * Code for Atom Image Gallery.
+ */
+
+/**
+ * Implements hook_preprocess_node()
+ */
+function atom_image_gallery_preprocess_node(&$vars) {
+  // Set shortcut variables. Hooray for less typing!
+  $type = $vars['type'];
+  $mode = $vars['view_mode'];
+
+  // On the Gallery landing page (/photos),
+  // show only the first image as the gallery preview image
+  if ($type == 'image_gallery' && $mode == 'teaser') {
+    // Make sure at least one image has been added
+    if (isset($vars['content']['field_gallery_media_images'][0])) {
+      // Unset other images in the array
+      $images = $vars['content']['field_gallery_media_images'];
+      $i = 1;
+      while (isset($images[$i])) {
+        unset($images[$i]);
+        $i++;
+      }
+      // Reset the array with a single image
+      $vars['content']['field_gallery_media_images'] = $images;
+    }
+  }
+
+  // Make the gallery node page use Boxer
+  // http://formstone.it/components/boxer
+  if ($type == 'image_gallery' && $mode == 'full') {
+    // Make sure Boxer is properly getting added
+    $library = libraries_detect('formstone_boxer');
+    if ($library && !empty($library['installed'])) {
+      libraries_load('formstone_boxer');
+    }
+    // load atom_image_gallery.js
+    drupal_add_js(drupal_get_path('module', 'atom_image_gallery') . '/js/atom_image_gallery.js');
+
+    $image_source = '';
+    $image_alt = '';
+    $image_caption = '';
+    $image_text_seperator = '';
+    $image_style_large = 'atom_media_image_full';
+    $image_style_thumb = 'atom_media_image_teaser';
+
+    // Check to see if any images exist
+    if (isset($vars['field_gallery_media_images'][0])) {
+      $images = $vars['field_gallery_media_images'];
+      foreach ($images as $key => $image) {
+
+        // Set the image caption if it exists
+        if (isset($image['field_file_image_source'][LANGUAGE_NONE][0]['safe_value'])) {
+          $image_source = t('Source: @source', array('@source' => $image['field_file_image_source'][LANGUAGE_NONE][0]['safe_value']));
+        }
+        // Set the image caption if it exists
+        if (isset($image['field_file_image_caption'][LANGUAGE_NONE][0]['safe_value'])) {
+          $image_caption = t('Caption: @caption', array('@caption' => $image['field_file_image_caption'][LANGUAGE_NONE][0]['safe_value']));;
+        }
+        // Set the alt tag if it exists
+        if (isset($image['field_file_image_title_text'][LANGUAGE_NONE][0]['safe_value'])) {
+          $image_alt = $image['field_file_image_title_text'][LANGUAGE_NONE][0]['safe_value'];
+        }
+        // Create the thumbnail
+        $image_thumbnail = theme_image_style(
+          array(
+            'path' => $image['uri'],
+            'style_name' => $image_style_thumb,
+            'alt' => $image_alt,
+            'height' => NULL,
+            'width' => NULL,
+          )
+        );
+        if (isset($image_caption) && isset($image_source)) {
+          $image_text_seperator = '&nbsp;&nbsp;';
+        }
+        // Create a link to an image style
+        $image_link = l(
+          $image_thumbnail,
+          image_style_url($image_style_large, $image['uri']),
+          array(
+            'html' => TRUE,
+            'attributes' => array(
+              'class' => array('boxer','boxer_image'),
+              'data-gallery' => array('gallery'),
+              'title' => $image_caption . $image_text_seperator . $image_source,
+            ),
+          )
+        );
+        // Unset the normal output
+        unset($vars['content']['field_gallery_media_images'][$key]);
+        // Reset with images with the correct markup
+        $vars['content']['field_gallery_media_images'][$key]['#markup'] = $image_link;
+
+      }
+    }
+  }
+
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function atom_image_gallery_libraries_info() {
+  return array(
+    'formstone_boxer' => array(
+      'name' => 'Formstone Boxer',
+      'vendor url' => 'http://formstone.it/components/boxer',
+      'download url' => 'https://github.com/Formstone/Boxer/releases',
+      'version arguments' => array(
+        'file' => 'jquery.fs.boxer.min.js',
+        'pattern' => '/([v])\d*\.\d*\.\d*/',
+        'lines' => 20,
+      ),
+      'files' => array(
+        'css' => array('jquery.fs.boxer.min.css'),
+        'js' => array('jquery.fs.boxer.min.js'),
+      ),
+    ),
+  );
+}

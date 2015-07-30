@@ -1,0 +1,13 @@
+name = Atom Privacy Policy
+description = Adds a Privacy Policy page and link in the footer menu.
+core = 7.x
+package = Atom
+
+dependencies[] = menu
+
+; Information added by Drupal.org packaging script on 2015-01-08
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_privacy_policy"
+datestamp = "1420757895"
+

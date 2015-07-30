@@ -1,0 +1,104 @@
+
+
+//  Color.
+//-----------------------------------------------------------------------------
+$white:             #ffffff;
+$black:             #000000;
+
+$gray-white:        #f0f0f0;
+$gray-lightest:     #ececec;
+$gray-lighter:      #c4c4c4;
+$gray-light:        #b4b4b4;
+$gray:              #999;
+$gray-dark:         #666;
+$gray-darker:       #444;
+$gray-darkest:      #2a2a2a;
+$gray-black:        #141414;
+
+$red:               #cc0000;
+$red-dark:          #95223C;
+
+$orange-white:      #fdf6e9;
+$orange-lightest:   #fff0d1;
+$orange-lighter:    #ffe7b7;
+$orange-light:      #ff9933;
+$orange:            #f27b25;
+$orange-dark:       #e55c16;
+
+$yellow:            #ffc600;
+$yellow-darker:     #dcab00;
+
+$green-lighter:     #b1d233;
+$green:             #9cc524;
+$green-dark:        #8cbc1a;
+$green-darker:      #78b00d;
+$green-darkest:     #5e9a08;
+
+$blue-white:        #ecf3f7;
+$blue-lightest:     #c9e7f6;
+$blue-lighter:      #93ceed;
+$blue-light:        #629cdb;
+$blue:              #006699;
+$blue-dark:         #314e88;
+$blue-darker:       #254590;
+$blue-darkest:      #0f2840;
+$blue-black:        #091827;
+
+$royal-white:        #ecf3f7;
+$royal-lightest:     #c9e7f6;
+$royal-lighter:      #93ceed;
+$royal-light:        #629cdb;
+$royal:              #4168b6;
+$royal-dark:         #314e88;
+$royal-darker:       #254590;
+$royal-darkest:      #0f2840;
+$royal-black:        #091827;
+
+// Configurable Colors
+// $clr-primary: $red;
+$clr-primary: FireBrick;
+// $clr-secondary: $blue;
+$clr-secondary: RoyalBlue;
+
+// Semantic color.
+$clr-neutral:      $gray-light;      // Default nuetral color
+$clr-text:         $gray-darker;     // Default body copy color
+$clr-link:         $clr-primary;   // Default link color
+$clr-accent:       $clr-secondary;          // Default accent color
+$clr-border:       $gray-lighter;    // Default border and required color
+$clr-status:       $green-dark;      // Default status color
+$clr-warning:      $orange;          // Default warning color
+$clr-error:        $red;             // Default error and required color
+$clr-table-border: $gray-light;      // Default table border color
+$clr-table-odd:    $gray-white;      // Default table odd row color
+$clr-table-even:   transparent;      // Default table even row color
+
+//
+// Buttons
+//
+$clr-btn--primary:   $clr-primary;
+$clr-btn--secondary: $clr-secondary;
+$clr-btn--tertiary:  $gray-light;
+$btn-style: 'none';
+$btn-highlight-strength: .5;
+$btn-shadow-strength: .5;
+
+//
+// Social Media
+//
+$clr-googleplus:    #dd4b39;
+$clr-facebook:      #3b5998;
+$clr-flickr:        #ff0084;
+$clr-foursquare:    #0072b1;
+$clr-instagram:     #517fa4;
+$clr-linkedin:      #4875b4;
+$clr-pinterest:     #cb2027;
+$clr-rss:           #ff6600;
+$clr-quora:         #a82400;
+$clr-snapchat:      #fffc00;
+$clr-tumbler:       #32506d;
+$clr-twitter:       #00aced;
+$clr-vimeo:         #aad450;
+$clr-vine:          #00bf8f;
+$clr-vk:            #45668e;
+$clr-youtube:       #dc2013;

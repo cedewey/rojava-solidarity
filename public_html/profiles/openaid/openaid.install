@@ -1,0 +1,172 @@
+<?php
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ */
+function openaid_install() {
+
+  // Disable pre-enabled themes
+  $disable_themes = array(
+    'bartik',
+  );
+  theme_disable($disable_themes);
+
+  /*
+   * Date formats
+   */
+  // add short date format
+  $date_format = array(
+    'format' => 'M j',
+    'type' => 'custom',
+    'locked' => 0
+  );
+  drupal_write_record('date_formats', $date_format);
+  variable_set('date_format_short', 'M j');
+
+  // add medium date format
+  $date_format = array(
+    'format' => 'F j, Y',
+    'type' => 'custom',
+    'locked' => 0
+  );
+  drupal_write_record('date_formats', $date_format);
+  variable_set('date_format_medium', 'F j, Y');
+
+  // add long date format
+  $date_format = array(
+    'format' => 'F j, Y g:ia',
+    'type' => 'custom',
+    'locked' => 0
+  );
+  drupal_write_record('date_formats', $date_format);
+  variable_set('date_format_long', 'F j, Y g:ia');
+
+  /*
+   * Set Themes
+   */
+  $default_theme = 'openaid2';
+  $admin_theme = 'adminimal';
+  theme_enable(array($default_theme, $admin_theme));
+  variable_set('theme_default', $default_theme);
+  variable_set('admin_theme', $admin_theme);
+  variable_set('node_admin_theme', '1');
+
+  /*
+   * Enable Admin Blocks
+   * We'll set standard blocks via contexts
+   */
+  $values = array(
+    array(
+      'module' => 'node',
+      'delta' => 'recent',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 10,
+      'region' => 'dashboard_main',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'main',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'help',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'help',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'user',
+      'delta' => 'login',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 10,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ),
+  );
+  $query = db_insert('block')->fields(array('module', 'delta', 'theme', 'status', 'weight', 'region', 'pages', 'cache'));
+  foreach ($values as $record) {
+    $query->values($record);
+  }
+  $query->execute();
+
+  // Allow visitor account creation with administrative approval.
+  variable_set('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+
+  // Permissions by role.
+  $permissions = array(
+    'anonymous' => array(
+      'access content',
+      'access comments',
+      'post comments',
+    ),
+    'authenticated' => array(
+      'access content',
+      'access comments',
+      'post comments',
+      'skip comment approval',
+      'use text format filtered_html',
+    ),
+    'content editor' => array(
+      'access content',
+      'access comments',
+      'post comments',
+      'skip comment approval',
+      'use text format filtered_html',
+      'use text format full_html',
+      'access administration pages',
+      'access administration menu',
+      'access content overview',
+      'view the administration theme',
+      'view own unpublished content',
+      'create page content',
+      'edit own page content',
+      'delete own page content',
+      'view revisions',
+      'revert revisions',
+      'delete revisions',
+      'create url aliases',
+    ),
+  );
+
+  // Enable default permissions for system roles.
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, $permissions['anonymous']);
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, $permissions['authenticated']);
+
+  // Create a role for content editors.
+  $editor_role = new stdClass();
+  $editor_role->name = 'content editor';
+  $editor_role->weight = 2;
+  user_role_save($editor_role);
+  user_role_grant_permissions($editor_role->rid, $permissions['content editor']);
+
+  // Create a default role for site administrators, with all available permissions assigned.
+  $admin_role = new stdClass();
+  $admin_role->name = 'administrator';
+  $admin_role->weight = 3;
+  user_role_save($admin_role);
+  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+  // Set this as the administrator role.
+  variable_set('user_admin_role', $admin_role->rid);
+
+  // Assign user 1 the "administrator" role.
+  db_insert('users_roles')
+    ->fields(array('uid' => 1, 'rid' => $admin_role->rid))
+    ->execute();
+
+} // openaid_install()

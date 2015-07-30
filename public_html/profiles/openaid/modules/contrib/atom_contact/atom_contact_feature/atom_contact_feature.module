@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Contact Feature feature.
+ */
+
+include_once 'atom_contact_feature.features.inc';

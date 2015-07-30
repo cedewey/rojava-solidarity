@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * OpenAid404 tests
+ */
+class OpenAid404Tests extends DrupalWebTestCase {
+  public $profile = 'openaid';
+
+  /**
+   * Simple test info
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'OpenAid 404',
+      'description' => 'Test the 404 functionality',
+      'group' => 'OpenAid',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp();
+
+    module_enable(array('openaid_404'), TRUE);
+  }
+
+  /**
+   * Test openaid_404_create_page().
+   */
+  public function testCreatePage() {
+    $this->assertTrue(db_query('SELECT COUNT(*) FROM node')->fetchField(), 0);
+    openaid_404_create_page();
+    $this->assertTrue(db_query('SELECT COUNT(*) FROM node')->fetchField(), 1);
+    $this->assertEqual(variable_get('site_404'), 'openaid-404');
+  }
+}

@@ -1,0 +1,16 @@
+#block-menu-block-openaid-subnav-1 {
+  .block-title {
+    margin-bottom: rhythm(2, $fs-l);
+
+    > a {
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+

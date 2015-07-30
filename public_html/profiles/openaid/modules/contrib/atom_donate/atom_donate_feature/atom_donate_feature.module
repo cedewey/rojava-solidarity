@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Donate feature.
+ */
+
+include_once 'atom_donate_feature.features.inc';

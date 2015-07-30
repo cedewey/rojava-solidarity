@@ -1,0 +1,54 @@
+//
+// @file
+// Styles for all regions within main.
+// ----------------------------------------------------------------------------
+
+// Main
+#main {
+  background-color: $white;
+}
+
+// Above content
+#above-content {
+  padding-top: rhythm(2);
+}
+
+// Main content
+#main-content {
+  margin-top: rhythm(5);
+
+  @include breakpoint($tablet-wide) {
+    margin-top: rhythm(10);
+  }
+
+  .has-flyout &:first-child {
+    margin-top: rhythm(5);
+  }
+}
+
+// Content
+.region--content {
+  .block-title {
+    position: relative;
+    @include adjust-font-size-to($fs-xxl, 5);
+    padding-bottom: rhythm(1, $fs-xxl);
+    margin-bottom: rhythm(5, $fs-xxl);
+
+    @include breakpoint($tablet) {
+      @include adjust-font-size-to($fs-xxxxl, 7);
+      padding-bottom: rhythm(3, $fs-xxxxl);
+      margin-bottom: rhythm(10, $fs-xxxxl);
+    }
+
+    &:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      display: block;
+      height: 1px;
+      width: 288px;
+      max-width: 100%;
+      background-color: $clr-border;
+    }
+  }
+}

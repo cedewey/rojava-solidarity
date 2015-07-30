@@ -1,0 +1,131 @@
+//
+// @file
+// Heading and title styles.
+// ----------------------------------------------------------------------------
+
+// Article list
+.article-list {
+  padding: 0;
+  border-bottom: 1px solid $clr-border;
+}
+
+.article-item {
+  @include leading-border(1px, 2);
+  padding-bottom: rhythm(2);
+  display: block;
+  border-color: $clr-border;
+}
+
+// No bullets
+.no-bullets {
+  margin: 0;
+  padding: 0;
+
+  > li {
+    list-style: none;
+  }
+}
+
+.list--ruled {
+  @extend .no-bullets;
+
+  > li {
+    position: relative;
+    margin-bottom: rhythm(11);
+    padding-bottom: rhythm(4);
+
+    &:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      display: block;
+      height: 1px;
+      width: 288px;
+      max-width: 100%;
+      background-color: $clr-border;
+    }
+  }
+}
+
+.list--2up {
+  @extend .no-bullets;
+
+  > li {
+    margin-bottom: rhythm(5);
+  }
+
+  @include breakpoint($tablet-wide) {
+    @include nup-container($gutter-method: 'nth');
+
+    > li {
+      @include nup-base(column-span(1.5, 1), 2, $gutter-method: 'nth');
+      @include nup-item(2);
+      margin-bottom: rhythm(11);
+    }
+
+    > li + li {
+      margin-top: 0;
+    }
+  }
+}
+
+.list--3up {
+  @extend .no-bullets;
+
+  > li {
+    margin-bottom: rhythm(8);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @include breakpoint($tablet) {
+    @include nup-container(column-span(1.5, 1), $gutter-method: 'expand');
+
+    > li {
+      @include nup-base(column-span(1.5, 1), 3, $gutter-method: 'expand');
+      @include nup-item(3);
+    }
+
+    > li + li {
+      margin-top: 0;
+    }
+  }
+}
+
+//
+// Resources
+//
+.list--resources {
+  @extend .no-bullets;
+
+  > li {
+    > a {
+      @extend .fa-download;
+      display: block;
+      padding-left: 1.5em;
+      text-decoration: none;
+      color: $gray-dark;
+      @include adjust-font-size-to($fs-s, 3);
+
+      &:before {
+        @extend .fa;
+        margin-left: -1.5em;
+        float: left;
+        color: $gray-light;
+        position: relative;
+        top: .25em;
+      }
+
+      &:hover,
+      &:focus {
+        color: $gray-black;
+      }
+    }
+
+    + li {
+      margin-top: rhythm(3);
+    }
+  }
+}

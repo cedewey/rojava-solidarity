@@ -1,0 +1,10 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function atom_hero_map_image_uninstall() {
+  variable_del('atom_hero_image_image');
+  variable_del('atom_hero_image_options');
+  variable_del('atom_hero_default_height');
+}

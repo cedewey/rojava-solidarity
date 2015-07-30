@@ -1,0 +1,9 @@
+#highlighted {
+  background: #333;
+  color: $white;
+  padding: rhythm(8) 0;
+
+  @include breakpoint($tablet-wide) {
+    padding: rhythm(14) 0;
+  }
+}

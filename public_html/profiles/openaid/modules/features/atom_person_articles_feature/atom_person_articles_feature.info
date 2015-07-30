@@ -1,0 +1,37 @@
+name = Atom Person Articles Feature
+description = Adds a list of News Articles and Blog Posts to a person's profile that they have authored.
+core = 7.x
+package = Atom
+dependencies[] = atom_person_feature
+dependencies[] = context
+dependencies[] = views
+dependencies[] = views_contextual_filter_filter
+features[context][] = atom_person_articles
+features[ctools][] = context:context:3
+features[ctools][] = strongarm:strongarm:1
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = atom_person_articles
+features_exclude[node][person] = person
+features_exclude[dependencies][ctools] = ctools
+features_exclude[field_base][field_person_bio] = field_person_bio
+features_exclude[field_base][field_person_photo] = field_person_photo
+features_exclude[field_base][field_person_type] = field_person_type
+features_exclude[field_base][field_person_title_position] = field_person_title_position
+features_exclude[field_base][field_person_email_address] = field_person_email_address
+features_exclude[field_base][field_person_phone_number] = field_person_phone_number
+features_exclude[field_base][field_person_twitter] = field_person_twitter
+features_exclude[field_instance][node-person-field_person_bio] = node-person-field_person_bio
+features_exclude[field_instance][node-person-field_person_email_address] = node-person-field_person_email_address
+features_exclude[field_instance][node-person-field_person_phone_number] = node-person-field_person_phone_number
+features_exclude[field_instance][node-person-field_person_photo] = node-person-field_person_photo
+features_exclude[field_instance][node-person-field_person_title_position] = node-person-field_person_title_position
+features_exclude[field_instance][node-person-field_person_twitter] = node-person-field_person_twitter
+features_exclude[field_instance][node-person-field_person_type] = node-person-field_person_type
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

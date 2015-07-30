@@ -1,0 +1,147 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function atom_call_to_action_theme() {
+  return array(
+    'call_to_action' => array(
+      'template' => 'call_to_action',
+      'path' => drupal_get_path('module', 'atom_call_to_action') . '/templates',
+      'variables' => array(
+        'node' => NULL,
+        'title' => '',
+        'text' => '',
+        'image' => '',
+        'link_url' => '',
+        'link_title' => '',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function atom_call_to_action_block_info() {
+  $blocks = array();
+  $blocks['atom_call_to_action'] = array(
+    'info' => t('Call to Action'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * The Call to Action block needs to be on any page that could possibly show
+ * a Call to Action item. This function will then determine which Call to Action
+ * nodes need to be displayed on a given page.
+ */
+function atom_call_to_action_block_view($delta) {
+  $block = array('content' => '');
+  if ($delta == 'atom_call_to_action') {
+    $blocks = atom_call_to_action_blocks_for_page();
+    foreach ($blocks as $node) {
+      $variables = atom_call_to_action_theme_variables($node);
+      $block['content'] .= theme('call_to_action', $variables);
+    }
+  }
+  return $block;
+}
+
+/**
+ * Get the call to action nodes for this page.
+ *
+ * @return array
+ *   Array of nodes that match this page.
+ */
+function atom_call_to_action_blocks_for_page() {
+  $page_hash = md5($_GET['q']);
+  $blocks = &drupal_static(__FUNCTION__ . '_' . $page_hash, NULL);
+
+  if ($blocks === NULL) {
+    // current Drupal path (lowercase for better comparisons)
+    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+
+    // get all values for field_call_to_action_page and filter that down to the
+    // nodes we need
+    $pages = db_select('field_data_field_call_to_action_pages', 'p');
+    $pages->fields('p', array('field_call_to_action_pages_value', 'entity_id'));
+    $pages->condition('field_call_to_action_pages_value', '', '!=');
+    $results = $pages->execute();
+    $nodes = array();
+    while ($result = $results->fetchAssoc()) {
+      // lowercase the pages
+      $node_pages = drupal_strtolower($result['field_call_to_action_pages_value']);
+
+      // Compare the lowercase internal and lowercase path alias (if any).
+      $page_match = drupal_match_path($path, $node_pages);
+      if ($path != $_GET['q']) {
+        $page_match = $page_match || drupal_match_path($_GET['q'], $node_pages);
+      }
+
+      if ($page_match) {
+        array_push($nodes, $result['entity_id']);
+      }
+    }
+
+    $blocks = array();
+    if ($nodes) {
+      node_load_multiple($nodes);
+      foreach ($nodes as $nid) {
+        $blocks[$nid] = node_load($nid);
+      }
+    }
+  }
+
+  return $blocks;
+}
+
+/**
+ * Return an array of variables to pass to call_to_action theme function
+ */
+function atom_call_to_action_theme_variables($node) {
+  $text = '';
+  $has_image = FALSE;
+  $has_link = FALSE;
+  $link = array('url' => '', 'title' => '');
+  $image = '';
+
+  // get the text if available
+  $text_items = field_get_items('node', $node, 'field_call_to_action_text');
+  if ($text_items) {
+    $text = $text_items[0]['safe_value'];
+  }
+
+  // get the link
+  $link_items = field_get_items('node', $node, 'field_call_to_action_link');
+  if ($link_items) {
+    $link = $link_items[0];
+    $has_link = TRUE;
+  }
+
+  // image
+  $image_items = field_get_items('node', $node, 'field_call_to_action_image');
+  if ($image_items) {
+    $image = theme_image_formatter(array(
+      'item' => $image_items[0],
+      'image_style' => 'atom_call_to_action_teaser',
+    ));
+    $has_image = TRUE;
+  }
+
+  $variables = array(
+    'node' => $node,
+    'title' => check_plain($node->title),
+    'text' => check_plain($text),
+    'has_image' => $has_image,
+    'has_link' => $has_link,
+    'image' => $image,
+    'link_url' => $link['url'],
+    'link_title' => $link['title'],
+  );
+
+  return $variables;
+}

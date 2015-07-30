@@ -1,0 +1,117 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before, .clearfix:after {
+  content: " ";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+
+a {
+  color: FireBrick;
+}
+
+input[type="submit"],
+button {
+  background-color: FireBrick;
+  color: white;
+}
+input[type="submit"]:hover, input[type="submit"]:focus,
+button:hover,
+button:focus {
+  color: white;
+  text-decoration: none;
+}
+
+.has-flyout #header {
+  border-bottom: 0.16667em solid FireBrick;
+}
+
+.nav-stacked.nav-buttons > li > a {
+  color: RoyalBlue;
+}
+
+#navigation {
+  background: FireBrick;
+}
+
+#flyout #primary-menu .nav-link {
+  color: FireBrick;
+}
+#flyout #primary-menu .nav-link.active-trail {
+  background-color: FireBrick;
+}
+
+.call-to-action--text {
+  background-color: RoyalBlue;
+}
+
+.button--call-to-action {
+  color: RoyalBlue;
+}
+
+.donate {
+  background-color: RoyalBlue;
+  color: white;
+}
+.donate:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.hero-statement-link > a {
+  background-color: FireBrick;
+  color: white;
+}
+.hero-statement-link > a:hover, .hero-statement-link > a:focus {
+  color: white;
+  text-decoration: none;
+}
+
+.link--button {
+  background-color: FireBrick;
+  color: white;
+}
+.link--button:hover, .link--button:focus {
+  color: white;
+  text-decoration: none;
+}
+
+.button--secondary {
+  background-color: RoyalBlue;
+  color: white;
+}
+.button--secondary:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.link--more {
+  background-color: FireBrick;
+  color: white;
+}
+.link--more:hover, .link--more:focus {
+  color: white;
+  text-decoration: none;
+}
+
+.link--all:after {
+  color: RoyalBlue;
+}
+
+#block-menu-block-openaid-subnav-1 .block-title > a {
+  color: RoyalBlue;
+}
+
+.group-project-links a {
+  color: FireBrick;
+}
+.group-project-links a:before {
+  color: #444;
+}
+
+.block--meta {
+  border-top-color: RoyalBlue;
+}

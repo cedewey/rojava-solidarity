@@ -1,0 +1,36 @@
+//
+// @file
+// Heading and title styles.
+// ----------------------------------------------------------------------------
+
+// Page titles
+.page-title {
+  @include adjust-font-size-to($fs-xxxl, 5.5);
+  margin-bottom: rhythm(4, $fs-xxxl);
+
+  @include breakpoint($tablet) {
+    @include adjust-font-size-to($fs-xxxxl, 6.5);
+    margin-bottom: rhythm(6, $fs-xxxxl);
+  }
+
+  .dateline + & {
+    margin-top: rhythm(4, $fs-xxxl);
+
+    @include breakpoint($tablet) {
+      margin-top: rhythm(6, $fs-xxxxl);
+    }
+  }
+}
+
+// Article title (non-full-display node titles )
+.article-title {
+  margin: 0 0 rhythm(1, $fs-xl);
+  @include adjust-font-size-to($fs-xl, 3);
+}
+
+// Titles
+.title {
+  > a {
+    text-decoration: none;
+  }
+}

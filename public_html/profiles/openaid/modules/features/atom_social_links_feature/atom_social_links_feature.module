@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Social Links feature.
+ */
+
+include_once('atom_social_links_feature.features.inc');

@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_enable().
+ */
+function atom_about_enable() {
+  atom_about_create_page();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function atom_about_disable() {
+  atom_about_disable_menu_link();
+}

@@ -1,0 +1,52 @@
+//
+// @file
+// Page layout styles.
+//
+// This file should contain the global layout styles for how regions
+// relate to one another on a given page.
+// ----------------------------------------------------------------------------
+
+#page {
+  max-width: 1600px;
+  margin: auto;
+}
+
+// Set the page width.
+.l--constrained {
+  @include breakpoint($desktop) {
+    max-width: $w-full;
+    margin: 0 auto;
+  }
+}
+
+.l--constrained--padded {
+  @extend .l--constrained;
+  padding: 0 30px;
+
+  @include breakpoint($desktop) {
+    padding: 0;
+  }
+}
+
+.aside {
+  @include breakpoint($tablet) {
+    width: $w-sidebar;
+  }
+}
+
+.col1 {
+  @include breakpoint($tablet) {
+    width: 336px;
+  }
+}
+.col2 {
+  @include breakpoint($tablet) {
+    width: 744px;
+  }
+}
+
+#sidebar-first {
+  @include breakpoint($tablet) {
+    float: right;
+  }
+}

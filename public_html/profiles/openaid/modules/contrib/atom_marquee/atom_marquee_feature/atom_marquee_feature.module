@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Marquee feature.
+ */
+
+include_once('atom_marquee_feature.features.inc');

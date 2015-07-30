@@ -1,0 +1,14 @@
+name = Atom Image Gallery
+description = Provides functionality for creating image galleries.
+core = 7.x
+package = Atom
+dependencies[] = atom_media_feature
+dependencies[] = atom_image_gallery_feature
+dependencies[] = libraries
+
+; Information added by Drupal.org packaging script on 2015-04-09
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_image_gallery"
+datestamp = "1428615782"
+

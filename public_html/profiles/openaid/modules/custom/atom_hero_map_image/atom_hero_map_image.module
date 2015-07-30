@@ -1,0 +1,255 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function atom_hero_map_image_menu() {
+  $items = array();
+  $items['admin/config/atom/hero'] = array(
+    'title' => 'Hero Map/Image',
+    'description' => 'Change Atom Hero settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('atom_hero_map_image_admin_project_form'),
+    'access arguments' => array('administer modules'),
+    'file' => 'atom_hero_map_image.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function atom_hero_map_image_block_info() {
+  $blocks = array();
+  $blocks['atom_hero_map_image'] = array(
+    'info' => t('Hero Map/Image'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function atom_hero_map_image_block_configure($delta = '') {
+  $form = array();
+  $function_name = 'atom_hero_map_image_block_' . $delta . '_configure';
+  if (function_exists($function_name)) {
+    $form = call_user_func($function_name, $form);
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function atom_hero_map_image_block_save($delta = '', $edit = array()) {
+  $function_name = 'atom_hero_map_image_block_' . $delta . '_save';
+  if (function_exists($function_name)) {
+    call_user_func($function_name, $edit);
+  }
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function atom_hero_map_image_block_view($delta = '') {
+  $function_name = 'atom_hero_map_image_block_' . $delta . '_view';
+  if (function_exists($function_name)) {
+    return call_user_func($function_name);
+  }
+}
+
+/**
+ * Configuration options for the block: atom_hero_image
+ */
+function atom_hero_map_image_block_atom_hero_map_image_configure($form) {
+  drupal_add_js(drupal_get_path('module', 'atom_hero_map_image') . '/js/configure.js');
+
+  $form['atom_hero_options'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Hero Map/Image Options'),
+    '#description' => t('The Atom Hero Map/Image block lets you display an image or a project map (if you have the <em>Atom Project</em> module enabled).'),
+  );
+
+  $selected_option = variable_get('atom_hero_image_options', 'image');
+
+  // add a hidden input to capture the image options because Drupal's radio
+  // support is less than ideal
+  $form['atom_hero_options']['atom_hero_image_options'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $selected_option,
+  );
+
+  // create the image option radio button, where we need to manually set the
+  // checked attributes because radio buttons
+  $image_attributes = array(
+    'value' => 'image',
+    'class' => array('atom_hero_image_option'),
+  );
+  if ($selected_option === 'image') {
+    $image_attributes['checked'] = TRUE;
+  }
+  $form['atom_hero_options']['atom_hero_image_option_image'] = array(
+    '#type' => 'radio',
+    '#title' => t('Use an image'),
+    '#default_value' => 'image',
+    '#attributes' => $image_attributes,
+    '#name' => 'atom_hero_image_option',
+  );
+
+  // image upload
+  $form['atom_hero_options']['atom_hero_image_image'] = array(
+    '#type' => 'managed_file',
+    '#title' => t('Upload Hero Image'),
+    '#size' => 40,
+    '#description' => t('Upload your image for the block.'),
+    '#upload_location' => 'public://',
+    '#default_value' => variable_get('atom_hero_image_image'),
+  );
+
+  // create the map option radio button, where we need to manually set the
+  // checked attributes because radio buttons
+  $map_attributes = array(
+    'value' => 'map',
+    'class' => array('atom_hero_image_option'),
+  );
+  if ($selected_option === 'map') {
+    $map_attributes['checked'] = TRUE;
+  }
+  $form['atom_hero_options']['atom_hero_image_option_map'] = array(
+    '#type' => 'radio',
+    '#title' => t('Use project map'),
+    '#default_value' => 'map',
+    '#attributes' => $map_attributes,
+    '#name' => 'atom_hero_image_option',
+  );
+
+  $message = '';
+  if (!module_exists('atom_project')) {
+    $message = t('The project map option requires the <em>Atom Project</em> module.');
+  }
+
+  $form['atom_hero_options']['atom_hero_image_option_map_notice'] = array(
+    '#type' => 'markup',
+    '#markup' => $message,
+  );
+
+  return $form;
+}
+
+/**
+ * Save configuration for block: atom_hero_image_save
+ */
+function atom_hero_map_image_block_atom_hero_map_image_save($edit) {
+  // save the map options
+  variable_set('atom_hero_image_options', $edit['atom_hero_image_options']);
+
+  // if the user chose map, clear the image options
+  if ($edit['atom_hero_image_options'] === 'map') {
+    // check if there is an image previously in the settings
+    $image = variable_get('atom_hero_image_image');
+    if ($image) {
+      $current_file = file_load($image);
+      file_usage_delete($current_file, 'atom_hero');
+    }
+    $edit['atom_hero_image_image'] = '';
+  }
+
+  // save the image options
+  variable_set('atom_hero_image_image', $edit['atom_hero_image_image']);
+  $file = file_load(variable_get('atom_hero_image_image', $edit['atom_hero_image_image']));
+  if ($file) {
+    file_usage_add($file, 'atom_hero', 'block', $edit['atom_hero_image_image']);
+  }
+}
+
+/**
+ * Block view function for block: atom_hero_image
+ */
+function atom_hero_map_image_block_atom_hero_map_image_view() {
+  $block = array();
+  $content = '';
+  $mode = variable_get('atom_hero_image_options', 'image');
+  if ($mode == 'image') {
+    $content = "<div class='block-atom-hero-message'>" . t('Select the <strong>gear icon</strong> in the corner of this area to upload your own image or enable the Projects map.') . "</div>";
+    if ($file_id = variable_get('atom_hero_image_image', 0)) {
+      if ($file_id) {
+        $image = file_load($file_id);
+        $content = theme('image', array('path' => $image->uri));
+      }
+    }
+  }
+  elseif ($mode == 'map' && module_exists('atom_project')) {
+    $content = atom_hero_map_image_project_map();
+  }
+  $block['content'] = $content;
+  return $block;
+}
+
+/**
+ * Create a map of projects
+ */
+function atom_hero_map_image_project_map() {
+  $map = atom_project_map();
+  $features = atom_project_map_features();
+
+  // if there are no features, we have to center/zoom somewhere...
+  if (!$features) {
+    $map['center'] = atom_hero_map_image_project_map_default_centerpoint();
+    $map['settings']['zoom'] = atom_hero_map_image_project_map_default_zoom();
+  }
+
+  return '<div class="atom-hero--map">' . leaflet_render_map($map, $features, atom_hero_map_image_project_map_default_height()) . '</div>';
+}
+
+/**
+ * Return the default map centerpoint.
+ *
+ * @return array
+ *   An array with lat/lon components
+ */
+function atom_hero_map_image_project_map_default_centerpoint() {
+  return variable_get(
+    'atom_hero_default_centerpoint',
+    array('lat' => 39.739167, 'lon' => -104.984722)
+  );
+}
+
+/**
+ * Return the default zoom for the map
+ *
+ * @return int
+ *   Return the default zoom level for the project map
+ */
+function atom_hero_map_image_project_map_default_zoom() {
+  return intval(variable_get('atom_hero_default_zoom', 5));
+}
+
+/**
+ * Get the default height for the map
+ */
+function atom_hero_map_image_project_map_default_height() {
+  return variable_get('atom_hero_default_height', '384px');
+}
+
+/**
+ * Preprocess the block
+ */
+function atom_hero_map_image_preprocess_block(&$vars) {
+  /* Set shortcut variables. Hooray for less typing! */
+  $block_id = $vars['block']->module . '-' . $vars['block']->delta;
+  $classes = &$vars['classes_array'];
+  $title_classes = &$vars['title_attributes_array']['class'];
+  $content_classes = &$vars['content_attributes_array']['class'];
+
+  /* Add global classes to all blocks */
+  $title_classes[] = 'block-title';
+  $content_classes[] = 'block-content';
+
+  if ($block_id == 'atom_hero-atom_hero_map_image') {
+    $classes[] = 'hero-image';
+    $classes[] = 'col2';
+    $mode = variable_get('atom_hero_image_options', '');
+    $classes[] = 'hero-image-' . $mode;
+  }
+}

@@ -1,0 +1,14 @@
+name = OpenAid Home
+description = Provides a home page. Do not disable.
+core = 7.x
+package = OpenAid
+
+dependencies[] = menu
+dependencies[] = openaid_base_feature
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

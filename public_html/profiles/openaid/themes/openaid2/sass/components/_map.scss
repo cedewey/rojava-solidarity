@@ -1,0 +1,25 @@
+
+.leaflet-container {
+  
+}
+
+.leaflet-popup-content-wrapper {
+  @include box-shadow(0 1px 3px rgba($black, .4));
+  @include border-radius(3px);
+}
+
+.leaflet-popup-content {
+  font-family: $ff-sans;
+  @include adjust-font-size-to($fs-s, 4, $fs-xxs);
+  font-weight: bold;
+  a {
+    @include hover-link;
+  }
+}
+
+#block-atom-project-atom-project-map-block {
+  margin-bottom: rhythm(5);
+  @include breakpoint($tablet) {
+    margin-bottom: rhythm(10);
+  }
+}

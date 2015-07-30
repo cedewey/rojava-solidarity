@@ -1,0 +1,162 @@
+//
+// @file
+// Field styles.
+// ----------------------------------------------------------------------------
+
+// Default field label
+.field-label {
+  @include adjust-font-size-to($fs-h4);
+  font-weight: bold;
+  color: blend-overlay(rgba($black, .25), $clr-text);
+  margin-bottom: rhythm(2, $fs-h4);
+
+}
+
+.field--inline-label {
+  .field-label {
+    margin-bottom: 0;
+    margin-right: .5em;
+    font-size: 1em;
+    display: inline;
+  }
+
+  .field-items {
+    display: inline-block;
+  }
+}
+
+.field + .field {
+  margin-top: rhythm(4);
+
+  .node-teaser & {
+    margin-top: rhythm(2);
+  }
+}
+
+.field--field-file-attachments {
+  .field-item + .field-item {
+    margin-top: rhythm(1);
+  }
+
+  .file {
+    > a {
+      @include adjust-font-size-to($fs-s);
+      color: $gray-dark;
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        color: $gray-black;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+//
+// Subtitles
+//
+.field--field-blog-subtitle,
+.field--field-news-subtitle {
+  @include adjust-font-size-to($fs-l);
+  margin-bottom: rhythm(8, $fs-l);
+
+  .page-title + & {
+    margin-top: -1 * rhythm(2, $fs-l);
+  }
+}
+
+//
+// Gallery Images
+//
+.field--field-gallery-media-images {
+  @include clearfix;
+  .field-item {
+    margin: 0 auto 30px;
+    max-width: 300px;
+    @include breakpoint($mobile) {
+      float: left;
+      margin-bottom: 0;
+      width: 50%;
+    }
+    @include breakpoint($tablet) {
+      width: 33%;
+
+    }
+    @include breakpoint($desktop) {
+      width: 25%;
+    }
+    
+    img {
+      display: block;
+      margin: 0 auto;
+      @include transition;
+    }
+
+    a {
+      background: $black;
+      display: block;
+      position: relative;
+      @extend .fa-plus-circle;
+      &:before {
+        @include fa-icon;
+        color: $white;
+        font-size: 80px;
+        line-height: 80px;
+        height: 80px;
+        width: 80px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -40px;
+        margin-top: -40px;
+        text-align: center;
+        z-index: 100;
+        opacity: 0;
+        @include transition;
+      }
+      img {
+        position: relative;
+        z-index: 90;
+      }
+      &:focus,
+      &:hover {
+        &:before {
+          opacity: 1;
+        }
+        img {
+          opacity: .25;
+        }
+      }
+    }
+  }
+}
+
+//
+// Tags
+//
+.field--field-gallery-tags {
+
+  .field-item {
+    display: inline;
+    margin-right: 6px;
+    a {
+      color: $gray;
+      text-decoration: none;
+      @include transition;
+      @extend .fa-tag;
+      margin-right: 1em;
+      &:before {
+        @include fa-icon;
+        color: $gray-dark;
+        font-size: .75em;
+        margin-right: .25em;
+      }
+
+      &:hover {
+        color: $gray-dark;
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+//
+// @file
+// Footer region styles.
+// ----------------------------------------------------------------------------
+
+// Footer region
+#footer {
+  margin-top: rhythm(11);
+  padding-top: rhythm(5);
+  padding-bottom: rhythm(5);
+  border-top: 1px solid $clr-border;
+  text-align: center;
+
+  .block + .block {
+    margin-top: rhythm(4);
+  }
+
+  @include breakpoint($tablet) {
+    text-align: left;
+
+    // Logo
+    .footer-logo {
+      @include grid-span(7, 18, $output-style: 'isolation');
+    }
+
+    .footer-inner {
+      @include grid-span(15, 1, $output-style: 'isolation');
+      border-right: 1px solid $clr-border;
+    }
+
+    // Footer menu.
+    #block-menu-block-openaid-base-1 {
+      border-bottom: 1px solid $clr-border;
+      margin-top: rhythm(1);
+
+      .nav {
+        text-align: left;
+
+        li:first-child {
+          > a {
+            padding-left: 0;
+          }
+        }
+      }
+    }
+
+    .copyright {
+      margin-top: rhythm(1, $fs-xs);
+    }
+  }
+
+  @include breakpoint($desktop) {
+    // Logo
+    .footer-logo {
+      @include grid-span(4, 21, $output-style: 'isolation');
+    }
+
+    .footer-inner {
+      position: relative;
+      @include grid-span(11.5, 1, $output-style: 'isolation');
+    }
+
+    #block-social-links-social-links {
+      position: absolute;
+      left: column-span(12, 1, 11.5);
+      width: column-span(6, 1, 11.5);
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      height: 32px;
+    }
+  }
+}
+
+.footer-logo {
+  display: block;
+  margin-bottom: rhythm(2);
+}
+
+.copyright {
+  @include adjust-font-size-to($fs-xs, 3);
+  margin-bottom: 0;
+}

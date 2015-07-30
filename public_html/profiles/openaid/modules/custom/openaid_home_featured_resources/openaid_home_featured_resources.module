@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function openaid_home_featured_resources_block_info() {
+  $blocks = array();
+
+  $blocks['openaid_home_featured_resources'] = array(
+    'info' => t('Home Featured Resources'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function openaid_home_featured_resources_block_view($delta = '') {
+  if (function_exists($delta . '_view')) {
+    return call_user_func($delta . '_view');
+  }
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function openaid_home_featured_resources_block_configure($delta = '') {
+  if (function_exists($delta . '_configure')) {
+    return call_user_func($delta . '_configure');
+  }
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function openaid_home_featured_resources_block_save($delta = '', $edit = array()) {
+  if (function_exists($delta . '_save')) {
+    return call_user_func($delta . '_save', $edit);
+  }
+}
+
+/**
+ * Block code to view openaid_home_featured_resources
+ */
+function openaid_home_featured_resources_view() {
+  $block = array('subject' => '', 'content' => '');
+
+  if (module_exists('openaid_home_featured_resources_feature') && module_exists('atom_resources')) {
+    // get promoted resource content
+    $query = db_select('node', 'n');
+    $query->fields('n', array('nid'));
+    $query->condition('status', 1)
+      ->condition('promote', 1)
+      ->condition('type', 'resource');
+    $query->orderBy('changed', 'desc');
+    $query->range(0, 4);
+
+    $results = $query->execute();
+    $nodes = array();
+    while ($result = $results->fetchAssoc()) {
+      array_push($nodes, $result['nid']);
+    }
+
+    $block['subject'] = t('Featured Resources');
+    $block['content'] = t('No featured resources have been added.');
+
+    if ($nodes) {
+      $block['content'] = '<ul class="list--ruled">';
+      node_load_multiple($nodes);
+      foreach ($nodes as $nid) {
+        $this_node = node_load($nid);
+        if ($this_node) {
+          $view = node_view($this_node, 'teaser');
+          if ($view) {
+            $block['content'] .= '<li>' . drupal_render($view) . '</li>';
+          }
+        }
+      }
+      $block['content'] .= '</ul>';
+    }
+  }
+
+  return $block;
+}

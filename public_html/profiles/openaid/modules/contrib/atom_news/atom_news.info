@@ -1,0 +1,12 @@
+name = Atom News
+description = Provides the ability to create news posts, a news list page and menu item.
+package = Atom
+core = 7.x
+dependencies[] = atom_news_feature
+
+; Information added by Drupal.org packaging script on 2015-04-09
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "atom_news"
+datestamp = "1428612269"
+

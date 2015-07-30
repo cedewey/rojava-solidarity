@@ -1,0 +1,21 @@
+name = Atom Hero Map Image Feature
+description = Create the context for the map image block
+core = 7.x
+package = Atom
+
+; Circular dependencies aren't gread
+; dependencies[] = atom_hero_map_image
+
+dependencies[] = context
+dependencies[] = ctools
+features[context][] = hero_map_image_front
+features[ctools][] = context:context:3
+features[features_api][] = api:2
+features_exclude[dependencies][atom_hero_map_image] = atom_hero_map_image
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

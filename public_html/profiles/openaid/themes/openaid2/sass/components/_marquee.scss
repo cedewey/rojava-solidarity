@@ -1,0 +1,97 @@
+//
+// @file
+// Marquee specific styles.
+// ----------------------------------------------------------------------------
+
+#marquee {
+  background-color: $black;
+}
+
+.marquee--teaser {
+  padding-top: 33.86%; // Aspect ratio of the background-image.
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 100% auto;
+  color: rgba($white, .65);
+  width: 100%;
+
+  .field--field-marquee-text {
+    color: rgba($white, .65);
+  }
+
+  @include breakpoint($tablet) {
+    background-position: 50%;
+    min-height: 474px;
+    padding-top: 210px;
+    background-size: cover;
+  }
+}
+
+.marquee-content {
+  position: relative;
+  padding: rhythm(3, $fs-xl) 40px;
+  background-color: $gray-darkest;
+  background-color: rgba($gray-darkest, .95);
+  @include adjust-font-size-to($fs-xl, 4.5);
+
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: rhythm(3, $fs-xl);
+    bottom: rhythm(3, $fs-xl);
+    left: 15px;
+    width: 5px;
+    border-width: 0 1px;
+    border-style: none solid;
+    border-color: $gray-light;
+  }
+
+  .field,
+  .field-items,
+  .field-item {
+    display: inline;
+  }
+
+  @include breakpoint($tablet) {
+    padding: rhythm(5, $fs-xxxxxl) 75px;
+    @include adjust-font-size-to($fs-xxxxxl, 7);
+
+    &:after {
+      left: 40px;
+      top: rhythm(5, $fs-xxxxxl);
+      bottom: rhythm(5, $fs-xxxxxl);
+    }
+  }
+
+  .field--field-marquee-text {
+    margin-right: .25em;
+  }
+
+  a {
+    color: $white;
+    opacity: .85;
+    text-decoration: none;
+    @include button--arrow;
+
+    &:after {
+      // @include transition();
+      // position: relative;
+      // left: 0;
+      // content: "\276f";
+      font-size: .5em;
+      // font-weight: 800;
+      vertical-align: .25em;
+      // margin-left: .5em;
+    }
+
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+  }
+
+  @include breakpoint($tablet) {
+    max-width: 745px;
+  }
+}

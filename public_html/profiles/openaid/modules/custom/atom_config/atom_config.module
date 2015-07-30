@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file
+ * atom_config functionality
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function atom_config_menu() {
+  $items = array();
+  $items['admin/config/atom'] = array(
+    'title' => 'Atom modules',
+    'page callback' => 'atom_config_menu_block_page',
+    'access arguments' => array('administer modules'),
+  );
+  return $items;
+}
+
+/**
+ * Provide a single block from the administration menu as a page.
+ */
+function atom_config_menu_block_page() {
+  $item = menu_get_item();
+  $output = t('You do not have any administrative items.');
+  if ($content = system_admin_menu_block($item)) {
+    $output = theme('admin_block_content', array('content' => $content));
+  }
+  return $output;
+}

@@ -1,0 +1,655 @@
+<?php
+/**
+ * @file
+ * openaid_configuration functionality
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function openaid_configuration_menu() {
+  $items = array();
+  $items['admin/modules/openaid'] = array(
+    'title' => 'Openaid',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('openaid_configuration_form'),
+    'access callback' => 'openaid_configuration_access',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Access callback
+ */
+function openaid_configuration_access() {
+  return user_access('administer modules') && user_access('administer features');
+}
+
+/**
+ * Configuration form for openaid
+ */
+function openaid_configuration_form($form, &$form_state) {
+  if (!isset($form) || (isset($form) && !is_array($form))) {
+    $form = array();
+  }
+
+  // check if this should be a confirmation form
+  if (isset($form_state['storage']['confirm'])) {
+    return confirm_form(
+      $form,
+      t('Enable modules'),
+      'admin/modules/openaid',
+      t(
+        'The following !module required by selected modules. Do you wish to proceed? %modules',
+        array(
+          '!module' => format_plural(
+            count($form_state['storage']['dependencies']),
+            'module is',
+            'modules are'
+          ),
+          '%modules' => implode(', ', $form_state['storage']['dependencies']),
+        )
+      )
+    );
+  }
+
+  drupal_add_css(drupal_get_path('module', 'openaid_configuration') . '/css/openaid_configuration.css');
+
+  $configuration = openaid_configuration_get();
+  foreach ($configuration as $grouping_key => $grouping) {
+    if (!$grouping['enabled']) {
+      continue;
+    }
+
+    $form[$grouping_key] = array(
+      '#type' => 'fieldset',
+      '#title' => $grouping['title'],
+    );
+    if (isset($grouping['description'])) {
+      $form['#description'] = $grouping['description'];
+    }
+
+    $headers = '<thead><tr><th>' . t('Enabled') . '</th><th>' . t('Name') . '</th><th>' . t('Description') . '</th></tr></thead>';
+
+    $form[$grouping_key]['table_start'] = array(
+      '#type' => 'markup',
+      '#markup' => '<table class="openaid-configuration-table">' . $headers . '<tbody>',
+    );
+
+    $row = 0;
+    foreach ($grouping['modules'] as $module) {
+      if (!$module['enabled']) {
+        continue;
+      }
+
+      $row++;
+      $row_class = 'odd';
+      if ($row % 2 === 0) {
+        $row_class = 'even';
+      }
+
+      $key = openaid_configuration_get_module_key($module['title']);
+
+      // if this is just another module, add it to the table and keep going
+      if (isset($module['modules'])) {
+        openaid_configuration_add_module($form, $module, $key, $grouping_key, $row_class);
+        continue;
+      }
+
+      // this specifies submodules, so we need to start a nested table
+      $form[$grouping_key][$key . '_sub_start'] = array(
+        '#type' => 'markup',
+        '#markup' => '<tr><td colspan="3" class="sub-modules"><table class="openaid-configuration-table sub-modules"><thead><tr><th colspan="3">' . $module['title'] . '</th></tr><tbody>',
+      );
+
+      $subrow = 0;
+      foreach ($module['submodules'] as $submodule) {
+        if (!$submodule['enabled']) {
+          continue;
+        }
+
+        $subrow++;
+        $subrow_class = 'odd';
+        if ($subrow % 2 === 0) {
+          $subrow_class = 'even';
+        }
+
+        $subkey = openaid_configuration_get_module_key($submodule['title']);
+        openaid_configuration_add_module($form, $submodule, $subkey, $grouping_key, $subrow_class);
+      }
+
+      $form[$grouping_key][$key . '_sub_end'] = array(
+        '#type' => 'markup',
+        '#markup' => '</tbody></table></td></tr>',
+      );
+    }
+
+    $form[$grouping_key]['table_end'] = array(
+      '#type' => 'markup',
+      '#markup' => '</tbody></table>',
+    );
+
+  }
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save settings'),
+  );
+
+  return $form;
+}
+
+/**
+ * Submit handler for the configuration form
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function openaid_configuration_form_submit($form, &$form_state) {
+  if (!isset($form_state['storage']['confirm'])) {
+    list($enable, $disable, $dependencies) = openaid_configuration_get_module_status_updates($form_state['values']);
+
+    // if the selected modules have dependencies, we should prompt the user to
+    // make sure they want to proceed.
+    if ($dependencies) {
+      // fire off to confirmation screen
+      if (!isset($form_state['storage'])) {
+        $form_state['storage'] = array();
+      }
+      $form_state['storage']['confirm'] = TRUE;
+      $form_state['storage']['enable'] = $enable;
+      $form_state['storage']['disable'] = $disable;
+      $form_state['storage']['dependencies'] = $dependencies;
+      $form_state['rebuild'] = TRUE;
+      return;
+    }
+  }
+
+  // either the user confirmed the selections or we don't need to confirm
+  list($enable, $disable, $dependencies) = openaid_configuration_get_module_status_updates($form_state['values']);
+
+  if (isset($form_state['storage']['enable'])) {
+    $enable = $form_state['storage']['enable'];
+    $disable = $form_state['storage']['disable'];
+  }
+
+  // disable the modules
+  module_disable($disable);
+
+  // enable the modules
+  module_enable($enable, TRUE);
+
+  $all_enabled = TRUE;
+  foreach ($enable as $enabled_module) {
+    if (!module_exists($enabled_module)) {
+      $all_enabled = FALSE;
+      break;
+    }
+  }
+
+  $all_disabled = TRUE;
+  foreach ($disable as $disabled_module) {
+    if (module_exists($disabled_module)) {
+      $all_disabled = FALSE;
+      break;
+    }
+  }
+
+  // check if everything worked
+  if ($all_enabled && $all_disabled) {
+    drupal_set_message(t('Configuration updated.'));
+  }
+  elseif ($all_enabled && !$all_disabled) {
+    drupal_set_message(t('All modules enabled, but some modules could not be disabled due to dependencies'));
+  }
+  elseif (!$all_enabled) {
+    drupal_set_message(t('Not all the modules could be enabled'), 'error');
+  }
+}
+
+/**
+ * Add a module to the configuration form.
+ */
+function openaid_configuration_add_module(&$form, $module, $key, $grouping_key, $class) {
+  $attributes = array(
+    'id' => $key,
+  );
+
+  $enabled = TRUE;
+  foreach ($module['modules'] as $module_name) {
+    if (!module_exists($module_name)) {
+      $enabled = FALSE;
+      break;
+    }
+  }
+
+  if ($enabled) {
+    $attributes['checked'] = TRUE;
+  }
+
+  $form[$grouping_key][$key] = array(
+    '#type' => 'checkbox',
+    '#title' => $module['title'],
+    '#prefix' => '<tr class="' . $class . '"><td class="input">',
+    '#suffix' => '</td>',
+    '#attributes' => $attributes,
+  );
+
+  $form[$grouping_key][$key . '_name'] = array(
+    '#type' => 'markup',
+    '#markup' => '<label for="' . $key . '">' . $module['title'] . '</label>',
+    '#prefix' => '<td>',
+    '#suffix' => '</td>',
+  );
+
+  $form[$grouping_key][$key . '_description'] = array(
+    '#type' => 'markup',
+    '#markup' => $module['description'],
+    '#prefix' => '<td>',
+    '#suffix' => '</td></tr>',
+  );
+}
+
+/**
+ * Check if the modules exist in this install.
+ */
+function openaid_configuration_all_modules_exist($modules) {
+  $paths_for_all = TRUE;
+  foreach ($modules as $real_module) {
+    $path = drupal_get_path('module', $real_module);
+    if (!$path) {
+      $paths_for_all = FALSE;
+      break;
+    }
+  }
+  return $paths_for_all;
+}
+
+/**
+ * Check which modules are available.
+ */
+function openaid_configuration_check_config(&$config) {
+  foreach (array_keys($config) as $section_id) {
+    $section =& $config[$section_id];
+    $config[$section_id]['enabled'] = TRUE;
+
+    if (!isset($section['modules']) || (isset($section['modules']) && count($section['modules']) === 0)) {
+      $config[$section_id]['enabled'] = FALSE;
+      continue;
+    }
+
+    // loop through all the faux modules listed in each grouping
+    for ($item_index = 0, $item_count = count($section['modules']); $item_index < $item_count; $item_index++) {
+      $item =& $section['modules'][$item_index];
+      $item['enabled'] = FALSE;
+
+      // if this is a list of modules, check that
+      if (isset($item['modules'])) {
+        $modules_count = count($item['modules']);
+        for ($i = 0; $i < $modules_count; $i++) {
+          $item['enabled'] = openaid_configuration_all_modules_exist($item['modules']);
+        }
+      }
+
+      // parse the submodules
+      if (isset($item['submodules'])) {
+        for ($submodule_index = 0, $submodule_count = count($item['submodules']); $submodule_index < $submodule_count; $submodule_index++) {
+          $submodule_item =& $item['submodules'][$submodule_index];
+          $submodule_item['enabled'] = FALSE;
+          $modules_count = count($submodule_item['modules']);
+          $submodule_item['enabled'] = openaid_configuration_all_modules_exist($submodule_item['modules']);
+        }
+
+        // check that this item has something enabled within it
+        $enabled_items = array_filter($item['submodules'], 'openaid_configuration_filter_items');
+        $item['enabled'] = !empty($enabled_items);
+      }
+    }
+
+    // check that this item has something enabled within it
+    $enabled_items = array_filter($section['modules'], 'openaid_configuration_filter_items');
+    $section['enabled'] = !empty($enabled_items);
+  }
+}
+
+/**
+ * Filter out active modules
+ */
+function openaid_configuration_filter_active_modules($module) {
+  if (!module_exists($module)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Filter the list of configuration items for those that are enabled.
+ */
+function openaid_configuration_filter_items($item) {
+  return $item['enabled'];
+}
+
+/**
+ * Get the OpenAid configuration page config array
+ *
+ * @return array
+ *   The configuration array
+ */
+function openaid_configuration_get() {
+  static $config = array();
+
+  // if we previously loaded this, just return it
+  if ($config) {
+    return $config;
+  }
+
+  $config['core_content'] = array(
+    'title' => t('Core Content'),
+    'modules' => array(
+      array(
+        'title' => t('Blog'),
+        'description' => openaid_configuration_get_module_description('atom_blog'),
+        'modules' => array('atom_blog', 'atom_blog_feature'),
+      ),
+      array(
+        'title' => t('Image Gallery'),
+        'description' => openaid_configuration_get_module_description('atom_image_gallery'),
+        'modules' => array('atom_image_gallery', 'atom_image_gallery_feature'),
+      ),
+      array(
+        'title' => t('News'),
+        'description' => openaid_configuration_get_module_description('atom_news'),
+        'modules' => array('atom_news', 'atom_news_feature'),
+      ),
+      array(
+        'title' => t('Partners'),
+        'description' => openaid_configuration_get_module_description('atom_partners_feature'),
+        'modules' => array('atom_partners_feature'),
+      ),
+      array(
+        'title' => t('Person'),
+        'description' => openaid_configuration_get_module_description('atom_person_feature'),
+        'modules' => array('atom_person_feature'),
+      ),
+      array(
+        'title' => t('Person Articles'),
+        'description' => openaid_configuration_get_module_description('atom_person_articles_feature'),
+        'modules' => array('atom_person_articles_feature'),
+      ),
+      array(
+        'title' => t('Volunteers'),
+        'description' => openaid_configuration_get_module_description('atom_volunteers'),
+        'modules' => array(
+          'atom_about',
+          'atom_volunteers_feature',
+          'atom_volunteers',
+        ),
+      ),
+      array(
+        'title' => t('Project'),
+        'description' => openaid_configuration_get_module_description('atom_project'),
+        'modules' => array('atom_project', 'atom_project_feature'),
+      ),
+      array(
+        'title' => t('Resource'),
+        'description' => openaid_configuration_get_module_description('atom_resources'),
+        'modules' => array('atom_resources', 'atom_resources_feature'),
+      ),
+      array(
+        'title' => t('Staff'),
+        'description' => openaid_configuration_get_module_description('atom_staff'),
+        'modules' => array('atom_about', 'atom_staff_feature', 'atom_staff'),
+      ),
+      array(
+        'title' => t('Project Enhancements'),
+        'submodules' => array(
+          array(
+            'title' => t('Image Gallery Connector'),
+            'description' => openaid_configuration_get_module_description('atom_project_and_image_gallery_connector'),
+            'modules' => array('atom_project_and_image_gallery_connector'),
+            'dependencies' => array('atom_project', 'atom_image_gallery'),
+          ),
+          array(
+            'title' => t('Blog Connector'),
+            'description' => openaid_configuration_get_module_description('atom_blog_and_project_connector'),
+            'modules' => array('atom_blog_and_project_connector'),
+            'dependencies' => array('atom_project', 'atom_blog'),
+          ),
+          array(
+            'title' => t('News Connector'),
+            'description' => openaid_configuration_get_module_description('atom_news_and_project_connector'),
+            'modules' => array('atom_news_and_project_connector'),
+            'dependencies' => array('atom_project', 'atom_news'),
+          ),
+          array(
+            'title' => t('Resource Connector'),
+            'description' => openaid_configuration_get_module_description('atom_resource_and_project_connector'),
+            'modules' => array('atom_resource_and_project_connector'),
+            'dependencies' => array('atom_project', 'atom_resource'),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  $config['home_enhancements'] = array(
+    'title' => t('Home Enhancements'),
+    'modules' => array(
+      array(
+        'title' => t('Hero Map'),
+        'description' => t('Adds a hero image/map to the homepage'),
+        'modules' => array('atom_hero_map_image'),
+      ),
+      array(
+        'title' => t('Hero Statement'),
+        'description' => t('Adds a hero statement to the homepage'),
+        'modules' => array('atom_hero_statement'),
+      ),
+      array(
+        'title' => t('Featured Partners'),
+        'description' => openaid_configuration_get_module_description('openaid_home_featured_partners_feature'),
+        'modules' => array('openaid_home_featured_partners_feature'),
+      ),
+      array(
+        'title' => t('Featured Projects'),
+        'description' => openaid_configuration_get_module_description('openaid_home_featured_projects_feature'),
+        'modules' => array('openaid_home_featured_projects_feature'),
+      ),
+      array(
+        'title' => t('Featured Resources'),
+        'description' => openaid_configuration_get_module_description('openaid_home_featured_resources'),
+        'modules' => array('openaid_home_featured_resources', 'openaid_home_featured_resources_feature'),
+      ),
+      array(
+        'title' => t('Latest Updates'),
+        'description' => openaid_configuration_get_module_description('openaid_home_latest_updates_feature'),
+        'modules' => array('openaid_home_latest_updates_feature'),
+      ),
+      array(
+        'title' => t('Marquee'),
+        'description' => openaid_configuration_get_module_description('atom_marquee'),
+        'modules' => array('atom_marquee', 'atom_marquee_feature'),
+      ),
+    ),
+  );
+
+  $config['informational_pages'] = array(
+    'title' => t('Informational Pages'),
+    'modules' => array(
+      array(
+        'title' => t('About'),
+        'description' => openaid_configuration_get_module_description('atom_about'),
+        'modules' => array('atom_about'),
+      ),
+      array(
+        'title' => t('Contact'),
+        'description' => openaid_configuration_get_module_description('atom_contact'),
+        'modules' => array('webform','atom_contact_feature','atom_contact'),
+      ),
+      array(
+        'title' => t('Privacy Policy'),
+        'description' => openaid_configuration_get_module_description('atom_privacy_policy'),
+        'modules' => array('atom_privacy_policy'),
+      ),
+      array(
+        'title' => t('Terms of Use'),
+        'description' => openaid_configuration_get_module_description('atom_terms_of_use'),
+        'modules' => array('atom_terms_of_use'),
+      ),
+    ),
+  );
+
+  $config['spam'] = array(
+    'title' => t('Spam Prevention'),
+    'modules' => array(
+      array(
+        'title' => t('Honeypot'),
+        'description' => t("Enable this user-friendly method of combatting spam. Honeypot can be used for forms such as comments and contact. Spammers won't be able to resist the honey and will get stuck."),
+        'modules' => array('honeypot'),
+      ),
+    ),
+  );
+
+  $config['user_engagement'] = array(
+    'title' => t('User Engagement'),
+    'modules' => array(
+      array(
+        'title' => t('Call to Action'),
+        'description' => openaid_configuration_get_module_description('atom_call_to_action'),
+        'modules' => array('atom_call_to_action'),
+      ),
+      array(
+        'title' => t('Donate'),
+        'description' => openaid_configuration_get_module_description('atom_donate'),
+        'modules' => array('atom_donate'),
+      ),
+      array(
+        'title' => t('Social Links'),
+        'description' => openaid_configuration_get_module_description('atom_social_links_feature'),
+        'modules' => array('atom_social_links_feature', 'social_links'),
+      ),
+      array(
+        'title' => t('Translate'),
+        'description' => openaid_configuration_get_module_description('openaid_translate'),
+        'modules' => array('openaid_translate', 'translate_this'),
+      ),
+    ),
+  );
+
+  // check modules
+  openaid_configuration_check_config($config);
+
+  return $config;
+}
+
+/**
+ * Get the module description from the info file
+ */
+function openaid_configuration_get_module_description($module) {
+  // if the module is enabled, we can call system_get_info()
+  $info = system_get_info('module', $module);
+  if ($info && isset($info->description)) {
+    return $info->description;
+  }
+
+  // if the module is not enabled, we'll have to find it
+  $path = drupal_get_path('module', $module);
+  $info_filename = $path . '/' . $module . '.info';
+  if (file_exists($info_filename)) {
+    $info = drupal_parse_info_file($info_filename);
+    if (isset($info['description'])) {
+      return $info['description'];
+    }
+  }
+
+  return '';
+}
+
+/**
+ * Return the module key
+ */
+function openaid_configuration_get_module_key($title) {
+  return str_replace(' ', '_', drupal_strtolower($title));
+}
+
+/**
+ * Check the values to see what modules to enable/disable and find dependencies.
+ *
+ * @return array
+ *   An array of arrays. Array is:
+ *   [modules to enable, modules to disable, dependencies]
+ */
+function openaid_configuration_get_module_status_updates($values) {
+  $config = openaid_configuration_get();
+  $config = openaid_configuration_reduce_config($config);
+
+  // track modules that are going to be enabled/disabled
+  $enable = $disable = array();
+
+  // track modules that are going to require other modules here. dependencies
+  // are loaded manually in openaid_configuration_get(), not from the info files
+  $dependencies = array();
+
+  foreach ($values as $item_key => $value) {
+    if (isset($config[$item_key])) {
+      if ($value) {
+        $enable = array_merge($enable, $config[$item_key]['modules']);
+        if (isset($config[$item_key]['dependencies'])) {
+          $dependencies = array_merge(
+            $dependencies,
+            array_filter($config[$item_key]['dependencies'], 'openaid_configuration_filter_active_modules')
+          );
+        }
+        continue;
+      }
+
+      $disable = array_merge($disable, $config[$item_key]['modules']);
+    }
+  }
+
+  // return the values as needed
+  return array($enable, $disable, $dependencies);
+}
+
+/**
+ * Flatten the configuration into a item/modules array
+ *
+ * @param array $config
+ *   A configuration array
+ *
+ * @return array
+ *   A reduced array with the item key => modules.
+ */
+function openaid_configuration_reduce_config($config) {
+  $reduced_config = array();
+  foreach ($config as $grouping) {
+    if (isset($grouping['modules'])) {
+      openaid_configuration_reduce_get_modules($reduced_config, $grouping['modules']);
+    }
+  }
+  return $reduced_config;
+}
+
+/**
+ * Recursive function to get a list of module items.
+ *
+ * The reduced configuration is used for checking what modules need to be
+ * enabled/disabled.
+ */
+function openaid_configuration_reduce_get_modules(&$reduced_config, $modules) {
+  foreach ($modules as $module) {
+    if (isset($module['modules'])) {
+      $value = array(
+        'modules' => $module['modules'],
+      );
+      if (isset($module['dependencies'])) {
+        $value['dependencies'] = $module['dependencies'];
+      }
+      $reduced_config[openaid_configuration_get_module_key($module['title'])] = $value;
+      continue;
+    }
+    if (isset($module['submodules'])) {
+      openaid_configuration_reduce_get_modules($reduced_config, $module['submodules']);
+    }
+  }
+}

@@ -1,0 +1,19 @@
+name = OpenAid Home Latest Updates Feature
+description = Adds a list of latest blog posts and news articles to the home page.
+core = 7.x
+package = OpenAid
+dependencies[] = context
+dependencies[] = views
+features[context][] = openaid_home_latest_updates
+features[ctools][] = context:context:3
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = openaid_home_latest_updates
+features_exclude[dependencies][ctools] = ctools
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

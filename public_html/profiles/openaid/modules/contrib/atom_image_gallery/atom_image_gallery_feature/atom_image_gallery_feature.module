@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Atom Image Gallery Feature feature.
+ */
+
+include_once 'atom_image_gallery_feature.features.inc';

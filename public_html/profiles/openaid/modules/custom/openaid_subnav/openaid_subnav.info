@@ -1,0 +1,15 @@
+name = OpenAid Subnav
+description = Navigation block for sub-pages.
+core = 7.x
+package = OpenAid
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = menu_block
+dependencies[] = openaid_subnav_feature
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

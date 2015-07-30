@@ -1,0 +1,18 @@
+name = Atom Project and Image Gallery Connector
+description = Provides the ability to create and link to image galleries from a project.
+core = 7.x
+package = Atom
+dependencies[] = atom_image_gallery
+dependencies[] = atom_project
+dependencies[] = entityreference
+dependencies[] = features
+features[features_api][] = api:2
+features[field_base][] = field_project_image_gallery
+features[field_instance][] = node-project-field_project_image_gallery
+
+; Information added by Drupal.org packaging script on 2015-07-20
+version = "7.x-2.3"
+core = "7.x"
+project = "openaid"
+datestamp = "1437367468"
+

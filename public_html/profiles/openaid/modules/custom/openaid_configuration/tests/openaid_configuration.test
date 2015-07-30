@@ -1,0 +1,169 @@
+<?php
+/**
+ * OpenAidConfigurationTests tests
+ */
+class OpenAidConfigurationTests extends DrupalWebTestCase {
+  public $profile = 'openaid';
+
+  /**
+   * Simple test info
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'OpenAid Configuration Tests',
+      'description' => 'Tests for the OpenAid Configuration module',
+      'group' => 'openaid',
+    );
+  }
+
+  /**
+   * Setup
+   */
+  public function setUp() {
+    parent::setUp(array('openaid_configuration'));
+  }
+
+  /**
+   * Assert the array has a given number of items.
+   */
+  public function assertCount($array, $expected, $message = NULL) {
+    if ($message) {
+      $message = str_replace(
+        array('%export', '%count', '%expected'),
+        array(var_export($array, TRUE), count($array), $expected),
+        $message
+      );
+    }
+
+    $this->assertEqual(count($array), $expected, $message);
+  }
+
+  /**
+   * Count modules
+   */
+  public function countModules($carry, $module) {
+    if (isset($module['modules'])) {
+      $carry += count($module['modules']);
+    }
+
+    if (isset($module['submodules'])) {
+      $carry += array_reduce($module['submodules'], array($this, 'countModules'));
+    }
+
+    return $carry;
+  }
+
+  /**
+   * Count the modules available in the openaid configuration
+   */
+  public function getModuleCount($config) {
+    $count = 0;
+    foreach ($config as $grouping) {
+      if (isset($grouping['modules'])) {
+        $count += array_reduce($grouping['modules'], array($this, 'countModules'));
+      }
+    }
+    return $count;
+  }
+
+  /**
+   * Get an array of form values.
+   */
+  public function getValues() {
+    $config = openaid_configuration_get();
+    $reduced_config = openaid_configuration_reduce_config($config);
+    $values = array();
+    foreach (array_keys($reduced_config) as $item) {
+      $values[$item] = 0;
+    }
+    return $values;
+  }
+
+  /**
+   * Test openaid_configuration_reduce_config().
+   */
+  public function testReduceConfig() {
+    $config = array(
+      'grouping' => array(
+        'modules' => array(
+          array(
+            'title' => 'Item',
+            'modules' => array('module1', 'module2'),
+          ),
+        ),
+      ),
+    );
+
+    $reduced_config = openaid_configuration_reduce_config($config);
+    $this->assertTrue(isset($reduced_config['item']));
+    $this->assertEqual($reduced_config['item']['modules'], array('module1', 'module2'));
+
+    $config = array(
+      'grouping' => array(
+        'modules' => array(
+          array(
+            'title' => 'Item',
+            'modules' => array('module1', 'module2'),
+          ),
+          array(
+            'submodules' => array(
+              array(
+                'title' => 'Item 2',
+                'modules' => array('module2', 'module3'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    $reduced_config = openaid_configuration_reduce_config($config);
+    $this->assertTrue(isset($reduced_config['item']));
+    $this->assertTrue(isset($reduced_config['item_2']));
+    $this->assertEqual($reduced_config['item_2']['modules'], array('module2', 'module3'));
+  }
+
+  /**
+   * Test openaid_configuration_get_module_status_updates().
+   */
+  public function testModuleStatusUpdates() {
+    $config = openaid_configuration_get();
+    $values = $this->getValues();
+    $values['blog'] = 1;
+
+    list($enable, $disable, $depenendies) = openaid_configuration_get_module_status_updates($values);
+
+    // blog defines atom_bog & atom_blog_feature to be enabled
+    $blog_module_count = count($config['core_content']['modules'][0]['modules']);
+    $this->assertCount($enable, $blog_module_count, 'There should be two module to enable, found: %export');
+
+    // everything else in the config should be in the disable list
+    $disable_count = $this->getModuleCount($config) - $blog_module_count;
+    $this->assertCount($disable, $disable_count, 'There should be %expected modules to disable, found: %export');
+
+    // the blog item doesn't specify dependencies
+    $this->assertCount($depenendies, 0, 'There should be no modules dependencies, found: %export');
+  }
+
+  /**
+   * Test openaid_configuration_get_module_status_updates().
+   */
+  public function testModuleStatusUpdatesAndDependencies() {
+    $values = $this->getValues();
+    $values['blog_connector'] = 1;
+
+    $config = openaid_configuration_get();
+    list($enable, $disable, $depenendies) = openaid_configuration_get_module_status_updates($values);
+
+    // blog connector only defines one module to enable (itself)
+    $blog_module_count = 1;
+    $this->assertCount($enable, $blog_module_count, 'There should be two module to enable, found: %export');
+
+    // everything else in the config should be in the disable list
+    $disable_count = $this->getModuleCount($config) - $blog_module_count;
+    $this->assertCount($disable, $disable_count, 'There should be %expected modules to disable, found: %export');
+
+    // the blog item doesn't specify dependencies
+    $this->assertCount($depenendies, 2, 'There should be %expected modules dependencies, found: %count = %export');
+  }
+}

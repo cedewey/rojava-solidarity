@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_disable().
+ */
+function atom_staff_disable() {
+  atom_staff_disable_menu_link();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function atom_staff_uninstall() {
+  variable_del('atom_staff_menu_setup');
+}

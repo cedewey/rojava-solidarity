@@ -1,0 +1,20 @@
+<?php 
+/**
+ * Implements hook_menu_block_blocks().
+ */
+function openaid_subnav_menu_block_blocks() {
+  // The array key is the block delta used by menu block.
+  return array(
+    'openaid_subnav-1' => array(
+      'menu_name'   => 'main-menu',
+      'parent_mlid' => 0,
+      'title_link'  => 1,
+      'admin_title' => 'Menu Block: Sub-Navigation',
+      'level'       => 2,
+      'follow'      => '0',
+      'depth'       => 0,
+      'expanded'    => 1,
+      'sort'        => 0,
+    ),
+  );
+}

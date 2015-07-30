@@ -1,0 +1,73 @@
+// Primary buttons
+.link--button {
+  @include button;
+  @include button--medium;
+}
+
+// Whole article links
+.link--article {
+  display: block;
+  text-decoration: none;
+  color: $clr-text;
+}
+
+//
+// More links
+//
+.link--more {
+  @include button;
+  @include button--medium;
+  @include button--arrow;
+}
+
+
+.link--more-wrapper {
+  margin-top: rhythm(4);
+  padding-top: rhythm(5);
+  border-top: $gray-dark 1px solid;
+}
+
+.link--all {
+  @include button--arrow;
+  color: $gray-dark;
+  text-decoration: none;
+
+  .item-list + & {
+    display: block;
+    margin-top: rhythm(5);
+    padding-top: rhythm(3);
+    border-top: 1px solid $clr-border;
+  }
+}
+
+// Node links
+.links {
+  clear: both;
+  margin-top: rhythm(4);
+  margin-bottom: 0;
+  padding-left: 0;
+
+  .nav-item {
+    display: inline-block;
+    margin-right: 1em;
+  }
+
+  .comment-comments > a,
+  .comment-add > a {
+    @include adjust-font-size-to($fs-xs);
+    color: $gray-dark;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.fa {
+  color: $gray-lighter;
+
+  a > & {
+    margin-right: .25em;
+  }
+}
